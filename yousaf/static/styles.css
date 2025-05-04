@@ -1,0 +1,189 @@
+.section-1 {
+    display: grid;
+    gap: 2rem;
+    padding: 2rem;
+    justify-content: center;
+    max-width: 90vw; /* Use viewport width for max-width */
+    margin: 0 auto;
+}
+
+.search-container {
+    padding: 1px 0;
+    position: relative;
+    width: 90%; /* Adjust width based on page size */
+    max-width: 970px; /* Prevents too much stretching on large screens */
+    margin: 0 auto;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 1rem; /* Adjust padding for better usability */
+    border: solid 1px blanchedalmond;
+    border-radius: 20px;
+    font-size: 1rem;
+}
+
+.quick-links {
+    color: white;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.tag {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 15px;
+    padding: 0.5rem 1rem;
+    color: white;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+.reading-options {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.container-1 {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    max-width: 90vw; /* Use viewport width for max-width */
+    margin: 0 auto;
+}
+
+.continue-reading, .ayah-of-the-day {
+    background-color: #150734;
+    padding: 2rem;
+    border-radius: 12px;
+    color: white;
+}
+
+.continue-reading {
+    grid-row: span 1;
+}
+
+.streak-container {
+    display: grid;
+    gap: 2rem;
+    
+}
+
+.streak-score, .weekly-streaks {
+    background-color: #150734;
+    padding: 2rem;
+    border-radius: 12px;
+    color: white;
+}
+
+.ayah-of-the-day {
+    grid-column: span 2; /* Make Ayah of the Day span both columns */
+}
+
+.continue-reading h2, .streak-score h2, .weekly-streaks h2, .ayah-of-the-day h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.reading-card, .streak-card, .weekly-card, .ayah-card {
+    background-color: #030916;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reading-info, .streak-card, .weekly-card, .ayah-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.reading-name-arabic {
+    font-size: 2rem;
+    color: #fff;
+}
+
+.reading-details, .streak-card span, .weekly-card span, .ayah-card span {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+.reading-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-set-goal {
+    background-color: #34c759;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    gap: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.surah-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Adjust minmax to 250px */
+    gap: 1rem;
+    padding: 2rem;
+    max-width: 90vw; /* Use viewport width for max-width */
+    margin: 0 auto;
+}
+
+.surah-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.surah-number {
+    width: 40px; /* Adjust width */
+    height: 40px; /* Adjust height */
+    background-color: light-gray;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.surah-info {
+    flex-grow: 1;
+}
+
+.surah-info h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.surah-info h3 span {
+    color: #666;
+    font-size: 0.9rem;
+    font-weight: normal;
+}
+
+.surah-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.surah-name-arabic {
+    font-size: 1.5rem;
+    color: #333;
+}

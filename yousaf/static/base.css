@@ -1,0 +1,242 @@
+/************************************************
+ * Base / Global Styles
+ ************************************************/
+ body {
+    background-color: #030916;
+    padding: 0;
+    margin: 0;
+    font-family: sans-serif;
+    display : flex;
+    flex-direction: column;
+}
+
+/************************************************
+ * Header
+ ************************************************/
+header {
+    background-color: #150734;
+    height: 8vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 20px;
+    position: sticky;
+    top: 0;
+    z-index:1000px  
+}
+
+footer {
+    position: relative;
+    background-color: #150734;
+    color: white;
+    padding: 40px 0;
+    text-align: center;
+    bottom: 0;
+    width: 100%;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    background-color: #0e0523; /* Darker background to highlight sections */
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 300px;
+    margin: 10px;
+    text-align: left;
+    padding: 20px;
+}
+
+.footer-section h3 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.footer-section p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin: 8px 0;
+}
+
+.footer-section ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1em;
+    transition: 0.3s ease-in-out;
+}
+
+.footer-section ul li a:hover {
+    text-decoration: underline;
+    color: #FFD700;
+}
+
+.footer-bottom {
+    background-color: #0e0523;
+    padding: 15px;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1em;
+}
+
+.logo {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.logo img {
+    width: 160px;
+    height: auto;
+}
+
+.logo span {
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 1.2em;
+}
+
+.header-title {
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+/************************************************
+ * User Menu + Dropdown
+ ************************************************/
+.user-menu {
+    align-items: center;
+}
+
+.user-menu ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.user-menu li {
+    position: relative;
+}
+
+.user-menu img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 40px; /* adjust if needed based on header height */
+    right: 0;
+    background-color: #150734;
+    border: 1px solid #2c1354;
+    border-radius: 4px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 180px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+
+    /* Hidden by default using opacity and visibility */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(10px);
+}
+
+.dropdown-menu li {
+    border-bottom: 1px solid #2c1354;
+}
+
+.dropdown-menu li:last-child {
+    border-bottom: none;
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 10px 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #2c1354;
+}
+
+
+/************************************************
+ * Content and Footer
+ ************************************************/
+.content {
+    padding: 20px;
+    color: #fff;
+}
+
+/************************************************
+ * Flash Messages
+ ************************************************/
+.flash-messages {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    margin: 20px 0;
+    border-radius: 5px;
+}
+.flash-messages ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.flash-messages li {
+    margin: 5px 0;
+}
+.flash-messages .success {
+    background-color: #d4edda;
+    color: #155724;
+}
+.flash-messages .error {
+    background-color: #f8d7da;
+    color: #721c24;
+}

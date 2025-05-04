@@ -1,0 +1,593 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="/static/surahPage.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<style>
+  .qari-selector {
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  .qari-selector select {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: var(--bg-color);
+    color: black;
+    cursor: pointer;
+  }
+
+  .qari-selector select:focus {
+    outline: none;
+    border-color: #008CBA;
+  }
+
+  .translation-selector {
+    margin: 20px 0;
+    text-align: center;
+  }
+
+  .translation-selector select {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: var(--bg-color);
+    color: black;
+    cursor: pointer;
+    min-width: 200px;
+  }
+
+  .translation-selector select:focus {
+    outline: none;
+    border-color: #008CBA;
+  }
+
+  .translation-content {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: var(--bg-color);
+  }
+
+  .translation-content.active {
+    display: block;
+  }
+
+  .translation-content p {
+    margin: 5px 0;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 600px) {
+    .modal-content {
+      width: 95vw;
+      margin: 30% auto;
+      padding: 10px;
+      font-size: 1rem;
+    }
+    .header-mic {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+    }
+    .header-mic img {
+      width: 28px;
+      height: 28px;
+    }
+  }
+  @media (max-width: 400px) {
+    .modal-content {
+      width: 99vw;
+      margin: 40% auto;
+      padding: 5px;
+      font-size: 0.95rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="kitabimg">
+  <div>
+    <img src="https://www.arabiantongue.com/wp-content/uploads/2022/12/Ramadan-reading-AlQuran-schedule.webp"
+      class="backimg" alt="Background Image">
+  </div>
+  <div class="box">
+    <div class="ayahheader">
+      <h2 class="fatiha">{{ surah.name }}</h2>
+      <br>
+      <p>{{ surah.transliteration }}</p>
+      <br>
+      <button class="mushaf-btn">{{ surah.type }}</button>
+      <button class="mushaf-btn">{{ surah.total_verses }}</button>
+    </div>
+    <br><br><br><br><br><br><br>
+
+    <div class="search-bar">
+      <button>Page</button>
+      <button>Surah</button>
+      <input type="text" placeholder="Search...">
+    </div>
+
+    <div class="script-selector">
+      <button class="script-btn active" data-script="arabic">Arabic</button>
+      <button class="script-btn" data-script="indopak">Indopak</button>
+      <button class="script-btn" data-script="tajweed">Tajweed</button>
+    </div>
+
+    <div class="translation-selector">
+      <select id="translationSelect" class="translation-select">
+        <option value="english">English (Sahih International)</option>
+        <option value="urdu">Urdu (Ahmed Ali)</option>
+        <option value="hindi">Hindi</option>
+      </select>
+    </div>
+
+    <div class="qari-selector">
+      <select id="qariSelect">
+        <option value="Alafasy">Mishary Rashid Alafasy</option>
+        <option value="Husary">Mahmoud Khalil Al-Husary</option>
+        <option value="Sudais">Abdur-Rahman As-Sudais</option>
+      </select>
+    </div>
+
+    <div class="ayah-container">
+      {% for i in range(surah.verses|length) %}
+      {% set verse = surah.verses[i] %}
+      {% set translation = surah_translation[i] %}
+      {% set indopak = surah_indopak[i] %}
+      {% set tajweed = surah_tajweed[i] %}
+      <div class="ayah" data-verse-id="{{ verse.id }}">
+        <div class="script-content">
+          <p class="arabic script active">{{ verse.text }}</p>
+          <p class="indopak script">{{ indopak.text }}</p>
+          <p class="tajweed script">{{ tajweed.text }}</p>
+        </div>
+        <div class="translation-content english active">
+          <p>
+            <span class="number">{{ verse.id }}.</span>
+            <span>{{ translation.text }}</span>
+          </p>
+        </div>
+        <div class="translation-content urdu">
+          <p>
+            <span class="number">{{ verse.id }}.</span>
+            <span>{{ translations.urdu[i].text if translations.urdu and i < translations.urdu|length else '' }}</span>
+          </p>
+        </div>
+        <div class="translation-content hindi">
+          <p>
+            <span class="number">{{ verse.id }}.</span>
+            <span>{{ translations.hindi[i].text if translations.hindi and i < translations.hindi|length else '' }}</span>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="play" data-surah="{{ surah.id }}" data-ayah="{{ verse.id }}">
+            <img src="{{ url_for('static', filename='play_dark.svg') }}" alt="Play" width="24" height="24">
+          </button>
+          <button class="share">
+            <img src="{{ url_for('static', filename='share_dark.svg') }}" alt="Share" width="24" height="24">
+          </button>
+          <button class="tafseer">
+            <img src="{{ url_for('static', filename='tafseer_dark.svg') }}" alt="Tafseer" width="24" height="24">
+          </button>
+          <button class="copy">
+            <img src="{{ url_for('static', filename='copy_dark.svg') }}" alt="Copy" width="24" height="24">
+          </button>
+          <button class="bookmark">
+            <img src="{{ url_for('static', filename='bookmark_dark.svg') }}" alt="Bookmark" width="24" height="24">
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <button id="scrollTopBtn" title="Go to top"></button>
+</div>
+
+<!-- Add verse recognition modal -->
+<div id="recognitionModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Verse Recognition</h2>
+    <div id="recognitionStatus">Click the microphone button to start recognition</div>
+    <div id="recognitionResult"></div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Script selector functionality
+    const scriptButtons = document.querySelectorAll('.script-btn');
+    const scriptContents = document.querySelectorAll('.script');
+    
+    scriptButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        scriptButtons.forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Get the selected script type
+        const selectedScript = this.dataset.script;
+        
+        // Hide all script contents
+        scriptContents.forEach(content => {
+          content.classList.remove('active');
+        });
+        
+        // Show selected script content
+        document.querySelectorAll(`.${selectedScript}`).forEach(script => {
+          script.classList.add('active');
+        });
+        
+        // Store the selected script in localStorage
+        localStorage.setItem('selectedScript', selectedScript);
+      });
+    });
+
+    // Translation selector functionality
+    const translationSelect = document.getElementById('translationSelect');
+    const translationContents = document.querySelectorAll('.translation-content');
+    
+    translationSelect.addEventListener('change', function() {
+      const selectedTranslation = this.value;
+      
+      // Hide all translation contents
+      translationContents.forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // Show selected translation content
+      document.querySelectorAll(`.translation-content.${selectedTranslation}`).forEach(content => {
+        content.classList.add('active');
+      });
+      
+      // Store the selected translation in localStorage
+      localStorage.setItem('selectedTranslation', selectedTranslation);
+    });
+    
+    // Restore the last selected translation
+    const lastSelectedTranslation = localStorage.getItem('selectedTranslation') || 'english';
+    translationSelect.value = lastSelectedTranslation;
+    translationSelect.dispatchEvent(new Event('change'));
+
+    // Audio functionality
+    const playButtons = document.querySelectorAll('.play');
+    let currentAudio = null;
+    let currentPlayButton = null;
+    let currentAyah = null;
+    const qariSelect = document.getElementById('qariSelect');
+
+    // Function to get audio URL from EveryAyah API
+    function getAudioUrl(surahId, ayahId) {
+      const formattedSurahId = String(surahId).padStart(3, '0');
+      const formattedAyahId = String(ayahId).padStart(3, '0');
+      const selectedQari = qariSelect.value;
+      
+      // Different URL formats for different Qaris
+      switch(selectedQari) {
+        case 'Alafasy':
+          return `https://everyayah.com/data/Alafasy_128kbps/${formattedSurahId}${formattedAyahId}.mp3`;
+        case 'Husary':
+          return `https://everyayah.com/data/Husary_128kbps/${formattedSurahId}${formattedAyahId}.mp3`;
+        case 'Sudais':
+          return `https://everyayah.com/data/Sudais_128kbps/${formattedSurahId}${formattedAyahId}.mp3`;
+        default:
+          return `https://everyayah.com/data/Alafasy_128kbps/${formattedSurahId}${formattedAyahId}.mp3`;
+      }
+    }
+
+    // Restore the last selected Qari
+    const lastSelectedQari = localStorage.getItem('selectedQari') || 'Alafasy';
+    qariSelect.value = lastSelectedQari;
+
+    // Store Qari selection
+    qariSelect.addEventListener('change', function() {
+      localStorage.setItem('selectedQari', this.value);
+      // If there's currently playing audio, update it with the new Qari
+      if (currentAudio && !currentAudio.paused) {
+        const currentSurah = currentPlayButton.dataset.surah;
+        const currentAyah = currentPlayButton.dataset.ayah;
+        currentAudio.src = getAudioUrl(currentSurah, currentAyah);
+        currentAudio.play();
+      }
+    });
+
+    // Function to update button state
+    function updateButtonState(button, isPlaying) {
+      const img = button.querySelector('img');
+      const theme = getCurrentTheme();
+      if (isPlaying) {
+        button.classList.add('playing');
+        img.src = `/static/pause_${theme}.svg`;
+        img.alt = 'Pause';
+      } else {
+        button.classList.remove('playing');
+        img.src = `/static/play_${theme}.svg`;
+        img.alt = 'Play';
+      }
+    }
+
+    playButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const surahId = this.dataset.surah;
+        const ayahId = this.dataset.ayah;
+        const audioUrl = getAudioUrl(surahId, ayahId);
+
+        // Create new audio element if it doesn't exist
+        if (!currentAudio) {
+          currentAudio = new Audio();
+        }
+
+        // If clicking the same ayah that's currently playing, pause it
+        if (currentAyah === ayahId && !currentAudio.paused) {
+          currentAudio.pause();
+          updateButtonState(this, false);
+          currentAyah = null;
+          return;
+        }
+
+        // If clicking a different ayah, stop current audio and play new one
+        if (currentPlayButton && currentPlayButton !== this) {
+          currentAudio.pause();
+          updateButtonState(currentPlayButton, false);
+        }
+
+        // Play the new audio
+        currentAudio.src = audioUrl;
+        currentAudio.play().then(() => {
+          updateButtonState(this, true);
+          currentPlayButton = this;
+          currentAyah = ayahId;
+        }).catch(error => {
+          console.error('Error playing audio:', error);
+          updateButtonState(this, false);
+          currentAyah = null;
+        });
+
+        // Update button when audio ends
+        currentAudio.onended = () => {
+          updateButtonState(currentPlayButton, false);
+          currentAyah = null;
+        };
+
+        // Handle errors
+        currentAudio.onerror = () => {
+          console.error('Error loading audio:', audioUrl);
+          updateButtonState(currentPlayButton, false);
+          currentAyah = null;
+        };
+      });
+    });
+    
+    // Scroll to top functionality
+    window.onscroll = function () {
+      let scrollTopBtn = document.getElementById("scrollTopBtn");
+      if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        scrollTopBtn.style.display = "block";
+      } else {
+        scrollTopBtn.style.display = "none";
+      }
+    };
+
+    document.getElementById("scrollTopBtn").addEventListener("click", function () {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+
+    // Helper function to get current theme
+    function getCurrentTheme() {
+      return localStorage.getItem("selectedTheme") || "dark";
+    }
+
+    // Verse Recognition functionality
+    const headerMicButton = document.querySelector('.header-mic');
+    const recognitionModal = document.getElementById('recognitionModal');
+    const recognitionStatus = document.getElementById('recognitionStatus');
+    const recognitionResult = document.getElementById('recognitionResult');
+    const closeModal = document.querySelector('.close');
+
+    // Initialize speech recognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null;
+    
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'ar-SA'; // Arabic language
+
+      recognition.onstart = function() {
+        recognitionStatus.textContent = 'Listening...';
+      };
+
+      recognition.onresult = function(event) {
+        const result = event.results[0][0].transcript;
+        recognitionStatus.textContent = 'Processing...';
+        recognitionResult.textContent = `Recognized: ${result}`;
+        // Send the recognized text to the server for verse identification
+        fetch('/recognize_verse', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: result,
+            surah_id: currentSurahId
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            recognitionResult.innerHTML += `<br>Identified Verse: ${data.verse_text}`;
+            recognitionResult.innerHTML += `<br>Surah: ${data.surah_name}, Verse: ${data.verse_number}`;
+          } else {
+            recognitionResult.innerHTML += `<br>Error: ${data.error}`;
+          }
+        })
+        .catch(error => {
+          recognitionResult.innerHTML += `<br>Error: ${error.message}`;
+        });
+      };
+
+      recognition.onerror = function(event) {
+        recognitionStatus.textContent = 'Error occurred in recognition';
+        recognitionResult.textContent = `Error: ${event.error}`;
+      };
+
+      recognition.onend = function() {
+        recognitionStatus.textContent = 'Recognition ended';
+      };
+    }
+
+    if (headerMicButton) {
+      headerMicButton.addEventListener('click', function() {
+        if (!recognition) {
+          recognitionStatus.textContent = 'Speech recognition not supported in this browser';
+          return;
+        }
+        recognitionModal.style.display = 'block';
+        recognition.start();
+      });
+    }
+
+    closeModal.addEventListener('click', function() {
+      recognitionModal.style.display = 'none';
+      if (recognition) {
+        recognition.stop();
+      }
+    });
+
+    window.addEventListener('click', function(event) {
+      if (event.target == recognitionModal) {
+        recognitionModal.style.display = 'none';
+        if (recognition) {
+          recognition.stop();
+        }
+      }
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const theme = localStorage.getItem("selectedTheme");
+    const footer = document.querySelector("#contact-us-list");
+    const body = document.body;
+    const box = document.querySelector(".box");
+    const ayahs = document.querySelectorAll(".ayah");
+    const allText = document.querySelectorAll("body, h1, h2, h3, p, .translation, .arabic, .number, .fatiha");
+    const buttons = document.querySelectorAll("button:not(#scrollTopBtn):not(.actions button)");
+
+    function applyTheme(theme) {
+      switch (theme) {
+        case "light":
+          body.style.backgroundColor = "#ffffff";
+          box.style.backgroundColor = "#e6edf5";
+
+          ayahs.forEach(ayah => {
+            ayah.style.backgroundColor = "#d8e3ed";
+          });
+
+          allText.forEach(el => {
+            el.style.color = "#000000";
+          });
+
+          buttons.forEach(btn => {
+            btn.style.backgroundColor = "#88a9d3";
+            btn.style.color = "#000000";
+          });
+          footer.style.color = "black";
+          updateActionIcons("light");
+
+          break;
+
+        case "sepia":
+          body.style.backgroundColor = "#f4ecd8";
+          box.style.backgroundColor = "#f1e5c8";
+
+          ayahs.forEach(ayah => {
+            ayah.style.backgroundColor = "#f1d6b4";
+          });
+
+          allText.forEach(el => {
+            el.style.color = "#5b4636";
+          });
+
+          buttons.forEach(btn => {
+            btn.style.backgroundColor = "#f1d6b4";
+            btn.style.color = "#5b4636";
+          });
+          footer.style.color = "#5b4636";
+          updateActionIcons("sepia");
+          break;
+
+        case "dark":
+          body.style.backgroundColor = "#040d21";
+          box.style.backgroundColor = "rgba(45, 45, 70, 0.88)";
+
+          ayahs.forEach(ayah => {
+            ayah.style.backgroundColor = "#150734";
+          });
+
+          allText.forEach(el => {
+            el.style.color = "white";
+          });
+
+          buttons.forEach(btn => {
+            btn.style.backgroundColor = "#008CBA";
+            btn.style.color = "white";
+          });
+          updateActionIcons("dark");
+          break;
+
+        case "auto":
+          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          applyTheme(prefersDark ? "dark" : "light");
+          break;
+
+        default:
+          applyTheme("dark");
+      }
+    }
+    function updateActionIcons(theme) {
+      const iconNames = ["share", "tafseer", "copy", "bookmark"];
+      const currentTheme = theme === 'auto' ? 
+        (window.matchMedia("(prefers-color-scheme: dark)").matches ? 'dark' : 'light') : 
+        theme;
+
+      // Update regular icons
+      iconNames.forEach(name => {
+        const imgs = document.querySelectorAll(`.actions .${name} img`);
+        imgs.forEach(img => {
+          img.src = `/static/${name}_${currentTheme}.svg`;
+        });
+      });
+
+      // Update play/pause buttons separately
+      const playButtons = document.querySelectorAll('.actions .play');
+      playButtons.forEach(button => {
+        const img = button.querySelector('img');
+        const isPlaying = button.classList.contains('playing');
+        img.src = `/static/${isPlaying ? 'pause' : 'play'}_${currentTheme}.svg`;
+      });
+    }
+    
+    applyTheme(theme || "auto");
+  });
+</script>
+
+{% endblock %}

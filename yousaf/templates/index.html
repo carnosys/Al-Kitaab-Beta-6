@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="../static/styles.css">
+{% endblock %}   
+
+{% block content %}
+
+<section class="section-1">
+    <div class="search-container">
+        <input type="text" placeholder="Search Here It is for You">
+    </div>
+
+    <div class="quick-links">
+        <div class="reading-options" id="reading-options">
+            <span>Surah of the Day:</span>
+            <button class="tag">Alkahf</button>
+            <button class="tag">Ayat Kursi</button>
+            <button class="tag">Alhaqqah</button>
+            <button class="tag">ArRahman</button>
+            <button class="tag">Qaf</button>
+        </div>
+    </div>
+
+    <div class="container-1">
+        <div class="continue-reading">
+            <h2>Continue Reading</h2>
+            <div class="reading-card">
+                <div class="reading-info">
+                    <div class="reading-name-arabic">الفاتحة</div>
+                    <div class="reading-details">
+                        <span>1. Al-Fatihah (The Opener)</span>
+                        <span>Verse 1</span>
+                    </div>
+                </div>
+                <div class="reading-actions" style="margin-top: 20px;">
+                    <button class="btn-set-goal">Set a Goal</button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="streak-container">
+            <div class="streak-score">
+                <h2>Streak Score</h2>
+                <div class="streak-card" id="streak-card">
+                    <span>1 day streak</span>
+                </div>
+            </div>
+        
+            <div class="weekly-streaks">
+                <h2>Weekly Streaks</h2>
+                <div class="weekly-card" id="weekly-card">
+                    <span>Grow with us this Ramadan</span>
+                </div>
+            </div>
+        </div>
+    
+        <div class="ayah-of-the-day">
+            <h2>Ayah of the Day</h2>
+            <div class="ayah-card" id="ayah-card" >
+                <span>And We have certainly made the Quran easy to remember. So is there anyone who will be mindful?</span>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+    <main class="surah-grid">
+
+        {% for surah in surahs.values() %}
+<a href="/surah/{{surah.number}}" class="surah-card">
+        
+            <div class="surah-number">{{surah.number}}</div>
+            <div class="surah-info">
+                <h3>{{surah.name}}</h3>
+                <div class="surah-meta">
+                    <span>{{surah.revelation}}</span>
+                    <span>7 Ayat</span>
+                </div>
+            </div>
+            <div class="surah-name-arabic">{{surah.arabic_name}}</div>
+            </a>
+        {% endfor %}
+    </main>
+
+
+{% endblock %}        
+    

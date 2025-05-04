@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qur'aan Habit Setup</title>
+    <link rel="stylesheet" href="./static/user-info.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-box">
+            <h1>Build Your Habit</h1>
+            <form>
+                <div class="input-field">
+                    <div class="input-wrapper">
+                        <label for="preferred-time">Preferred Time for Reading</label>
+                        <select id="preferred-time">
+                            <option>Morning</option>
+                            <option>Afternoon</option>
+                            <option>Evening</option>
+                            <option>Night</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <label>Reading Mode</label>
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <input type="radio" id="digital" name="reading-mode" value="Digital">
+                            <label for="digital">Digital</label>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="radio" id="physical" name="reading-mode" value="Physical">
+                            <label for="physical">Physical Mushaf</label>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="radio" id="listening" name="reading-mode" value="Listening">
+                            <label for="listening">Listening</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <div class="input-wrapper">
+                        <label for="surah-preference">Surah Preference</label>
+                        <input type="text" id="surah-preference" placeholder="Enter preferred Surahs">
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <div class="input-wrapper">
+                        <label for="reading-style">Reading Style</label>
+                        <select id="reading-style">
+                            <option>Recitation</option>
+                            <option>Tajweed Focus</option>
+                            <option>With Tafsir</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <label>Reminder Preference</label>
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <input type="checkbox" id="daily" name="reminder" value="Daily">
+                            <label for="daily">Daily</label>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="checkbox" id="weekly" name="reminder" value="Weekly">
+                            <label for="weekly">Weekly</label>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="checkbox" id="none" name="reminder" value="None">
+                            <label for="none">None</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <div class="input-wrapper">
+                        <label>Memorization Interest</label>
+                        <input type="range" id="memorization-interest" min="0" max="10">
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <div class="input-wrapper">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" placeholder="Enter your country">
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <label>Gender</label>
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <input type="radio" id="male" name="gender" value="Male">
+                            <label for="male">Male</label>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="radio" id="female" name="gender" value="Female">
+                            <label for="female">Female</label>
+                        </div>
+                        <div class="input-wrapper">
+                            <input type="radio" id="other" name="gender" value="Other">
+                            <label for="other">Other</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <div class="input-wrapper">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" min="1" max="120" placeholder="Enter your age">
+                    </div>
+                </div>
+
+                <div class="btn-field">
+                    <button type="submit">Save</button>
+                    <a href="{{ url_for('home_page') }}">
+                        <button type="button">Next</button>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="../static/progressAndAnalytics.css"> 
+{% endblock %}
+
+{% block content %}
+
+    <div class="container" id="container">
+        <div class="box" id="box1">
+            <span class="unit1">50</span><br> 
+            <span class="description">Ayah Per Day</span></div>
+        <div class="box" id="box2">
+            <span class="unit2">100
+            </span><br><span class="description">Hasnat Achieved</span></div>
+
+        <div class="box" id="box3">
+            <span class="unit3">68%</span><br>
+            <span class="description">Success Rate</span></div>
+    </div><br><br>
+    <div class="graph">
+        <img class="gif-img" src="https://cdn.dribbble.com/userupload/19599497/file/original-f7b3e9e0794f0b580a84f09407b2e3ec.gif" alt="">  <!--Work in Progress: Placeholder for progress graph that will be dynamically implemented later in the project -->
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const savedTheme = localStorage.getItem("selectedTheme");
+        
+            const box1 = document.getElementById("box1");
+            const box2 = document.getElementById("box2");
+            const box3 = document.getElementById("box3");
+        
+            const boxes = [box1, box2, box3];
+        
+            function applyBoxTheme(bgColor, fontColor) {
+                boxes.forEach(box => {
+                    box.style.backgroundColor = bgColor;
+                    box.style.color = fontColor;
+                });
+            }
+        
+            function applyTheme(theme) {
+                switch (theme) {
+                    case "light":
+                        applyBoxTheme("#d8e3ed", "#000000");
+                        document.querySelector("#contact-us-list1").style.color='black';
+                document.querySelector("#contact-us-list2").style.color='black';
+                document.querySelector("#contact-us-list3").style.color='black';
+
+                        break;
+                    case "sepia":
+                        applyBoxTheme("#f1d6b4", "#5b4636");
+                        document.querySelector("#contact-us-list1").style.color='#5b4636';
+                document.querySelector("#contact-us-list2").style.color='#5b4636';
+                document.querySelector("#contact-us-list3").style.color='#5b4636';
+                        break;
+                    case "dark":
+                        applyBoxTheme("#150734", "#ffffff");
+                        break;
+                    case "auto":
+                        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                        if (prefersDark) {
+                            applyTheme("dark");
+                        } else {
+                            applyTheme("light");
+                        }
+                        break;
+                    default:
+                        applyTheme("dark");
+                }
+            }
+        
+            applyTheme(savedTheme || "auto");
+        });
+        </script>
+        
+
+{% endblock %}

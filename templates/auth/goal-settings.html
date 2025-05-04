@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goal Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/goal-settings.css') }}">
+</head>
+<body>
+    <div class="goal-settings-container">
+        <h1>Goal Settings</h1>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+            <div class="success-message">{{ success }}</div>
+        {% endif %}
+
+        <form action="{{ url_for('views.goal_settings') }}" method="post">
+            <!-- Reading Goal Section -->
+            <div class="setting-section">
+                <h2>Reading Goal</h2>
+                
+                <div class="form-group">
+                    <label for="verses_per_session">Verses per Session</label>
+                    <input type="number" name="verses_per_session" id="verses_per_session" min="1" value="{{ user.verses_per_session }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Preferred Reading Window</label>
+                    <div class="time-input-group">
+                        <input type="time" name="window_start" value="{{ user.window_start }}" required>
+                        <span>to</span>
+                        <input type="time" name="window_end" value="{{ user.window_end }}" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reminder Schedule Section -->
+            <div class="setting-section">
+                <h2>Reminder Schedule</h2>
+                
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="reminder_freq" value="daily" {% if user.reminder_freq == 'daily' %}checked{% endif %}>
+                        Every Day
+                    </label>
+                    <label>
+                        <input type="radio" name="reminder_freq" value="weekly" {% if user.reminder_freq == 'weekly' %}checked{% endif %}>
+                        Every Week
+                    </label>
+                    <label>
+                        <input type="radio" name="reminder_freq" value="custom" {% if user.reminder_freq == 'custom' %}checked{% endif %}>
+                        Custom Interval
+                    </label>
+                </div>
+
+                <div id="custom-interval">
+                    <div class="form-group">
+                        <label>Notify me every</label>
+                        <div class="time-input-group">
+                            <input type="number" name="interval_hours" min="0" max="23" value="{{ user.reminder_interval_minutes // 60 if user.reminder_interval_minutes else 0 }}">
+                            <span>h</span>
+                            <input type="number" name="interval_minutes" min="0" max="59" value="{{ user.reminder_interval_minutes % 60 if user.reminder_interval_minutes else 0 }}">
+                            <span>m</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-save">Save Changes</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const radios = document.querySelectorAll('input[name="reminder_freq"]');
+            const customDiv = document.getElementById('custom-interval');
+
+            function updateCustomIntervalVisibility() {
+                customDiv.style.display = document.querySelector('input[name="reminder_freq"]:checked').value === 'custom' ? 'block' : 'none';
+            }
+
+            radios.forEach(radio => {
+                radio.addEventListener('change', updateCustomIntervalVisibility);
+            });
+
+            // Initial visibility check
+            updateCustomIntervalVisibility();
+        });
+    </script>
+</body>
+</html> 

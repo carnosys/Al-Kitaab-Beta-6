@@ -1,0 +1,812 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons/favicon.ico') }}">
+<style>
+  /* Simple share menu styling */
+  .share-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 1000;
+    min-width: 150px;
+    right: 0;
+    top: 100%;
+    margin-top: 5px;
+  }
+  .share-menu a,
+  .share-menu button {
+    display: block;
+    margin: 4px 0;
+    text-decoration: none;
+    color: #007bff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+    width: 100%;
+    padding: 4px 8px;
+  }
+  .share-menu a:hover,
+  .share-menu button:hover {
+    background-color: #f8f9fa;
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background-color: #150734;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-content h3 {
+    color: #FFD700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #ccc;
+  }
+
+  .form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #030916;
+    border: 1px solid #2c1354;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    resize: vertical;
+  }
+
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+
+  .btn-cancel, .btn-save {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-cancel {
+    background-color: #030916;
+    color: #FFD700;
+    border: 1px solid #FFD700;
+  }
+
+  .btn-save {
+    background-color: #FFD700;
+    color: #030916;
+    border: none;
+  }
+
+  .btn-cancel:hover {
+    background-color: #FFD700;
+    color: #030916;
+  }
+
+  .btn-save:hover {
+    background-color: #ffd900;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="kitabimg">
+  <div>
+    <img src="https://www.arabiantongue.com/wp-content/uploads/2022/12/Ramadan-reading-AlQuran-schedule.webp" class="backimg" alt="Background Image">
+  </div>
+  <div class="box" style="position: relative;">
+    <div class="ayahheader">
+      <h2 class="fatiha">{{ surah.name }}</h2>
+      <p>{{ surah.transliteration }}</p>
+      <button class="mushaf-btn">{{ surah.type }}</button>
+      <button class="mushaf-btn">{{ surah.total_verses }}</button>
+      <div class="session-controls" style="margin-top: 10px;">
+        <button id="startSessionBtn" class="session-btn">Start Session</button>
+        <button id="endSessionBtn" class="session-btn" style="display: none;">End Session</button>
+        <div id="stopwatch" style="display: none; margin-top: 10px;">
+          <span id="timer">00:00:00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <button>Page</button>
+      <button>Surah</button>
+      <input type="text" placeholder="Search...">
+    </div>
+
+    <div class="script-selector">
+      <button class="script-btn active" data-script="arabic">Arabic</button>
+      <button class="script-btn" data-script="indopak">Indopak</button>
+      <button class="script-btn" data-script="tajweed">Tajweed</button>
+    </div>
+
+    <div class="ayah-container">
+      {% for i in range(surah.verses|length) %}
+      {% set verse = surah.verses[i] %}
+      {% set translation = surah_translation[i] %}
+      {% set indopak = surah_indopak[i] %}
+      {% set tajweed = surah_tajweed[i] %}
+      <div class="ayah" id="ayah-{{ verse.id }}" data-verse-id="{{ verse.id }}" style="position: relative;">
+        <div class="script-content">
+          <p class="arabic script active">{{ verse.text }}</p>
+          <p class="indopak script">{{ indopak.text }}</p>
+          <p class="tajweed script">{{ tajweed.text }}</p>
+        </div>
+        <p class="translation">
+          <span class="number">{{ verse.id }}.</span>
+          <span>{{ translation.text }}</span>
+        </p>
+        <div class="actions">
+          <button class="play" data-surah="{{ surah.id }}" data-ayah="{{ verse.id }}">
+            <img src="{{ url_for('static', filename='icons/play_dark.svg') }}" alt="Play" width="24" height="24" data-base-path="{{ url_for('static', filename='icons/play') }}">
+          </button>
+          <button class="share">
+            <img src="{{ url_for('static', filename='icons/share_dark.svg') }}" alt="Share" width="24" height="24" data-base-path="{{ url_for('static', filename='icons/share') }}">
+          </button>
+          <button class="tafseer">
+            <img src="{{ url_for('static', filename='icons/tafseer_dark.svg') }}" alt="Tafseer" width="24" height="24" data-base-path="{{ url_for('static', filename='icons/tafseer') }}">
+          </button>
+          <button class="copy">
+            <img src="{{ url_for('static', filename='icons/copy_dark.svg') }}" alt="Copy" width="24" height="24" data-base-path="{{ url_for('static', filename='icons/copy') }}">
+          </button>
+          <button class="bookmark" data-verse-id="{{ verse.id }}" data-surah-id="{{ surah.id }}">
+            <img src="{{ url_for('static', filename='icons/bookmark_dark.svg') }}" alt="Bookmark" width="24" height="24" data-base-path="{{ url_for('static', filename='icons/bookmark') }}">
+          </button>
+          <button class="note" data-verse-id="{{ verse.id }}" data-surah-id="{{ surah.id }}">
+            <img src="{{ url_for('static', filename='icons/notes_dark.svg') }}" alt="Note" width="24" height="24" data-base-path="{{ url_for('static', filename='icons/notes') }}">
+          </button>
+          <button class="last-seen" data-surah="{{ surah.id }}" data-ayah="{{ verse.id }}">
+            <img src="{{ url_for('static', filename='icons/last_seen_dark.svg') }}" alt="Last Seen" width="24" height="24" data-base-path="{{ url_for('static', filename='icons/last_seen') }}">
+          </button>
+        </div>
+        <div class="share-menu">
+          <a href="#" class="share-twitter" target="_blank">Share on Twitter</a>
+          <a href="#" class="share-facebook" target="_blank">Share on Facebook</a>
+          <a href="#" class="share-whatsapp" target="_blank">Share on WhatsApp</a>
+          <button class="share-copy-link">Copy Link</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <button id="scrollTopBtn" title="Go to top"></button>
+</div>
+
+<div id="bookmark-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Add Bookmark</h3>
+        <form id="bookmark-form">
+            <input type="hidden" id="bookmark-verse-id">
+            <div class="form-group">
+                <label for="bookmark-note">Add a note (optional)</label>
+                <textarea id="bookmark-note" rows="3" placeholder="Add a note to this bookmark..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel">Cancel</button>
+                <button type="submit" class="btn-save">Save Bookmark</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="note-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Add/Edit Note</h3>
+        <form id="note-form">
+            <input type="hidden" id="note-verse-id">
+            <input type="hidden" id="note-surah-id">
+            <input type="hidden" id="note-id">
+            <div class="form-group">
+                <label for="note-text">Your Note</label>
+                <textarea id="note-text" rows="5" placeholder="Write your thoughts about this verse..."></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel">Cancel</button>
+                <button type="submit" class="btn-save">Save Note</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Font size functionality
+    window.applyFontSize = function(size) {
+      const scale = 1.2 + (size * 0.2);
+      document.querySelectorAll('.arabic, .indopak, .tajweed').forEach(el => {
+        el.style.fontSize = `${scale}rem`;
+      });
+      document.querySelectorAll('.translation').forEach(el => {
+        el.style.fontSize = `${scale * 0.8}rem`;
+      });
+    };
+
+    // Initialize font size
+    const savedFontSize = localStorage.getItem('quranFontSize') || '2';
+    window.applyFontSize(parseFloat(savedFontSize));
+
+    // Listen for font size changes from settings page
+    window.addEventListener('message', function(event) {
+      if (event.data.type === 'fontSizeChange') {
+        window.applyFontSize(event.data.value);
+      }
+    });
+
+    // Scroll to specific ayah if hash is present
+    if (window.location.hash) {
+      const ayahId = window.location.hash.substring(1); // Remove the # symbol
+      const ayahElement = document.getElementById(ayahId);
+      if (ayahElement) {
+        setTimeout(() => {
+          ayahElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+    }
+
+    // Update last seen when clicking on last seen button
+    document.querySelectorAll('.last-seen').forEach(button => {
+      button.addEventListener('click', async function(e) {
+        e.stopPropagation(); // Prevent event from bubbling to ayah click handler
+        const surahId = this.dataset.surah;
+        const ayahId = this.dataset.ayah;
+        
+        try {
+          // Update last seen in database
+          const response = await fetch('/update-last-seen', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              surah_id: surahId,
+              ayah_id: ayahId
+            })
+          });
+
+          if (response.ok) {
+            // Show success feedback
+            const icon = this.querySelector('img');
+            const originalSrc = icon.src;
+            icon.src = "{{ url_for('static', filename='icons/last_seen_active.svg') }}";
+            setTimeout(() => {
+              icon.src = originalSrc;
+            }, 1000);
+
+            // Update last seen in localStorage
+            localStorage.setItem('lastSeenInfo', JSON.stringify({
+              surahId,
+              ayahId,
+              timestamp: new Date().getTime()
+            }));
+          }
+        } catch (error) {
+          console.error('Error updating last seen:', error);
+        }
+      });
+    });
+
+    // Script selector functionality
+    const scriptButtons = document.querySelectorAll('.script-btn');
+    const scriptContents = document.querySelectorAll('.script');
+    scriptButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        scriptButtons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        const scriptType = this.dataset.script;
+        scriptContents.forEach(content => content.classList.remove('active'));
+        document.querySelectorAll(`.${scriptType}`).forEach(el => el.classList.add('active'));
+        localStorage.setItem('selectedScript', scriptType);
+      });
+    });
+    const lastScript = localStorage.getItem('selectedScript');
+    if (lastScript) {
+      const btn = document.querySelector(`.script-btn[data-script=\"${lastScript}\"]`);
+      if (btn) btn.click();
+    }
+
+    // Audio play/pause functionality
+    const playButtons = document.querySelectorAll('.play');
+    let currentAudio = null;
+    let currentPlayButton = null;
+    let currentAyah = null;
+
+    function getAudioUrl(surahId, ayahId) {
+      const s = String(surahId).padStart(3, '0');
+      const a = String(ayahId).padStart(3, '0');
+      return `https://everyayah.com/data/Alafasy_128kbps/${s}${a}.mp3`;
+    }
+
+    function updatePlayState(button, playing) {
+      const img = button.querySelector('img');
+      const theme = localStorage.getItem('selectedTheme') || 'dark';
+      if (playing) {
+        button.classList.add('playing');
+        img.src = "{{ url_for('static', filename='icons/pause_') }}" + theme + '.svg';
+        img.alt = 'Pause';
+      } else {
+        button.classList.remove('playing');
+        img.src = "{{ url_for('static', filename='icons/play_') }}" + theme + '.svg';
+        img.alt = 'Play';
+      }
+    }
+
+    playButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const surahId = this.dataset.surah;
+        const ayahId = this.dataset.ayah;
+        const audioUrl = getAudioUrl(surahId, ayahId);
+        if (!currentAudio) currentAudio = new Audio();
+
+        if (currentAyah === ayahId && !currentAudio.paused) {
+          currentAudio.pause();
+          updatePlayState(this, false);
+          currentAyah = null;
+          return;
+        }
+        if (currentPlayButton && currentPlayButton !== this) {
+          currentAudio.pause();
+          updatePlayState(currentPlayButton, false);
+        }
+
+        currentAudio.src = audioUrl;
+        currentAudio.play().then(() => {
+          updatePlayState(this, true);
+          currentPlayButton = this;
+          currentAyah = ayahId;
+        }).catch(() => {
+          updatePlayState(this, false);
+          currentAyah = null;
+        });
+
+        currentAudio.onended = () => updatePlayState(currentPlayButton, false);
+        currentAudio.onerror = () => updatePlayState(currentPlayButton, false);
+      });
+    });
+
+    // Copy ayah text and translation
+    const copyButtons = document.querySelectorAll('.copy');
+    copyButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const ayahDiv = this.closest('.ayah');
+        const text = ayahDiv.querySelector('.script.active').textContent;
+        const translation = ayahDiv.querySelector('.translation span:last-child').textContent;
+        const number = ayahDiv.querySelector('.number').textContent;
+        const toCopy = `${text}\n\n${number} ${translation}`;
+        navigator.clipboard.writeText(toCopy).then(() => {
+          const img = this.querySelector('img');
+          const original = img.src;
+          img.src = "{{ url_for('static', filename='icons/check_dark.svg') }}";
+          setTimeout(() => img.src = original, 2000);
+        });
+      });
+    });
+
+    // Share menu functionality
+    document.querySelectorAll('.ayah').forEach(ayahEl => {
+      const shareBtn = ayahEl.querySelector('.share');
+      const menu = ayahEl.querySelector('.share-menu');
+
+      shareBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const top = shareBtn.offsetTop + shareBtn.offsetHeight + 4;
+        const left = shareBtn.offsetLeft;
+        menu.style.top = top + 'px';
+        menu.style.left = left + 'px';
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+
+        const id = ayahEl.dataset.verseId;
+        const text = ayahEl.querySelector('.script.active').textContent.trim();
+        const trans = ayahEl.querySelector('.translation span:last-child').textContent.trim();
+        const pageUrl = window.location.origin + window.location.pathname + '#verse-' + id;
+        const encodedUrl = encodeURIComponent(pageUrl);
+        const encodedText = encodeURIComponent(text + '\n\n' + id + '. ' + trans);
+
+        menu.querySelector('.share-twitter').href = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`;
+        menu.querySelector('.share-facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+        menu.querySelector('.share-whatsapp').href = `https://api.whatsapp.com/send?text=${encodedText}%20${encodedUrl}`;
+      });
+
+      ayahEl.querySelector('.share-copy-link').addEventListener('click', function() {
+        const id = ayahEl.dataset.verseId;
+        const link = window.location.origin + window.location.pathname + '#verse-' + id;
+        const ta = document.createElement('textarea');
+        ta.value = link;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        alert('Link copied to clipboard');
+        menu.style.display = 'none';
+      });
+    });
+
+    // Close share menus when clicking outside
+    document.addEventListener('click', function() {
+      document.querySelectorAll('.share-menu').forEach(menu => menu.style.display = 'none');
+    });
+
+    // Scroll to top button
+    const scrollBtn = document.getElementById('scrollTopBtn');
+    window.addEventListener('scroll', function() {
+      scrollBtn.style.display = document.documentElement.scrollTop > 100 ? 'block' : 'none';
+    });
+    scrollBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Session control variables
+    let currentSessionId = null;
+    let startAyah = null;
+    let stopwatchInterval = null;
+    let startTime = null;
+
+    // Define session handlers outside the click events
+    function startSessionHandler(e) {
+      // Don't handle if clicking on buttons or share menu
+      if (e.target.closest('.actions') || e.target.closest('.share-menu')) {
+        return;
+      }
+      
+      const verseId = this.dataset.verseId;
+      if (confirm(`Begin reading from Ayah ${verseId}?`)) {
+        // Remove click handlers
+        document.querySelectorAll('.ayah').forEach(a => {
+          a.style.cursor = '';
+          a.removeEventListener('click', startSessionHandler);
+          a.removeEventListener('click', endSessionHandler);
+        });
+
+        // Start session
+        fetch('/start-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            start_ayah: verseId
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            currentSessionId = data.session_id;
+            startAyah = verseId;
+            document.getElementById('startSessionBtn').style.display = 'none';
+            document.getElementById('endSessionBtn').style.display = 'inline-block';
+            document.getElementById('stopwatch').style.display = 'block';
+            startTime = new Date();
+            stopwatchInterval = setInterval(updateStopwatch, 1000);
+          } else {
+            alert('Failed to start session');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to start session');
+        });
+      }
+    }
+
+    function endSessionHandler(e) {
+      // Don't handle if clicking on buttons or share menu
+      if (e.target.closest('.actions') || e.target.closest('.share-menu')) {
+        return;
+      }
+      
+      const verseId = this.dataset.verseId;
+      if (confirm(`Do you want to end your reading session at Ayah ${verseId}?`)) {
+        // Remove click handlers
+        document.querySelectorAll('.ayah').forEach(a => {
+          a.style.cursor = '';
+          a.removeEventListener('click', startSessionHandler);
+          a.removeEventListener('click', endSessionHandler);
+        });
+
+        // Calculate verses read
+        const versesRead = parseInt(verseId) - parseInt(startAyah) + 1;
+
+        // End session
+        fetch('/end-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            session_id: currentSessionId,
+            end_ayah: verseId,
+            verses_read: versesRead,
+            duration: Math.floor((new Date() - startTime) / 1000)
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            clearInterval(stopwatchInterval);
+            document.getElementById('endSessionBtn').style.display = 'none';
+            document.getElementById('startSessionBtn').style.display = 'inline-block';
+            document.getElementById('stopwatch').style.display = 'none';
+            alert(`Session completed! You read ${versesRead} verses.`);
+            currentSessionId = null;
+            startAyah = null;
+          } else {
+            alert('Failed to end session');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to end session');
+        });
+      }
+    }
+
+    // Start session button click handler
+    document.getElementById('startSessionBtn').addEventListener('click', function() {
+      // Remove any existing click handlers first
+      document.querySelectorAll('.ayah').forEach(ayah => {
+        ayah.style.cursor = '';
+        ayah.removeEventListener('click', startSessionHandler);
+        ayah.removeEventListener('click', endSessionHandler);
+      });
+
+      alert('Click the ayah you want to start from.');
+      document.querySelectorAll('.ayah').forEach(ayah => {
+        ayah.style.cursor = 'pointer';
+        ayah.addEventListener('click', startSessionHandler);
+      });
+    });
+
+    // End session button click handler
+    document.getElementById('endSessionBtn').addEventListener('click', function() {
+      // Remove any existing click handlers first
+      document.querySelectorAll('.ayah').forEach(ayah => {
+        ayah.style.cursor = '';
+        ayah.removeEventListener('click', startSessionHandler);
+        ayah.removeEventListener('click', endSessionHandler);
+      });
+
+      alert('Click the ayah you want to end with.');
+      document.querySelectorAll('.ayah').forEach(ayah => {
+        ayah.style.cursor = 'pointer';
+        ayah.addEventListener('click', endSessionHandler);
+      });
+    });
+
+    // Stopwatch functionality
+    function updateStopwatch() {
+      const now = new Date();
+      const diff = now - startTime;
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      document.getElementById('timer').textContent = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // Bookmark functionality
+    const bookmarkButtons = document.querySelectorAll('.bookmark');
+    const bookmarkModal = document.getElementById('bookmark-modal');
+    const bookmarkForm = document.getElementById('bookmark-form');
+    const bookmarkVerseId = document.getElementById('bookmark-verse-id');
+    const bookmarkNote = document.getElementById('bookmark-note');
+    const cancelButton = document.querySelector('.btn-cancel');
+    const saveButton = document.querySelector('.btn-save');
+
+    bookmarkButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const verseId = this.dataset.verseId;
+            bookmarkVerseId.value = verseId;
+            bookmarkNote.value = '';
+            bookmarkModal.style.display = 'flex';
+        });
+    });
+
+    cancelButton.addEventListener('click', function() {
+        bookmarkModal.style.display = 'none';
+    });
+
+    bookmarkForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const verseId = bookmarkVerseId.value;
+        const surahId = document.querySelector('.bookmark[data-verse-id="' + verseId + '"]').dataset.surahId;
+        const note = bookmarkNote.value;
+
+        fetch('/add-bookmark', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                verse_id: verseId,
+                surah_id: surahId,
+                note: note
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Show success message
+                alert('Bookmark added successfully!');
+                bookmarkModal.style.display = 'none';
+            } else {
+                alert(data.message || 'Failed to add bookmark');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while adding the bookmark');
+        });
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target === bookmarkModal) {
+            bookmarkModal.style.display = 'none';
+        }
+    });
+
+    // Notes functionality
+    document.querySelectorAll('.note').forEach(button => {
+        button.addEventListener('click', async function() {
+            const verseId = this.dataset.verseId;
+            const surahId = this.dataset.surahId;
+            
+            // Set verse and surah IDs first
+            document.getElementById('note-verse-id').value = verseId;
+            document.getElementById('note-surah-id').value = surahId;
+            
+            // Check if note exists for this verse
+            try {
+                const response = await fetch(`/get-note/${verseId}`);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    if (data.note) {
+                        // Existing note found, populate the form
+                        document.getElementById('note-id').value = data.note.note_id;
+                        document.getElementById('note-text').value = data.note.note_text;
+                    } else {
+                        // No existing note, clear the form
+                        document.getElementById('note-id').value = '';
+                        document.getElementById('note-text').value = '';
+                    }
+                    
+                    // Show the modal
+                    document.getElementById('note-modal').style.display = 'flex';
+                } else {
+                    console.error('Error getting note:', data.message);
+                    alert('Failed to check for existing note. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error checking for existing note:', error);
+                alert('An error occurred while checking for existing note. Please try again.');
+            }
+        });
+    });
+
+    document.querySelector('#note-modal .btn-cancel').addEventListener('click', function() {
+        document.getElementById('note-modal').style.display = 'none';
+    });
+
+    document.getElementById('note-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const verseId = document.getElementById('note-verse-id').value;
+        const surahId = document.getElementById('note-surah-id').value;
+        const noteId = document.getElementById('note-id').value;
+        const noteText = document.getElementById('note-text').value;
+
+        if (!noteText.trim()) {
+            alert('Please enter a note before saving');
+            return;
+        }
+
+        try {
+            const response = await fetch('/add-note', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    verse_id: verseId,
+                    surah_id: surahId,
+                    note_id: noteId,
+                    note_text: noteText
+                })
+            });
+            
+            const data = await response.json();
+            if (data.status === 'success') {
+                document.getElementById('note-modal').style.display = 'none';
+                alert('Note saved successfully!');
+            } else {
+                console.error('Error saving note:', data.message);
+                alert(data.message || 'Failed to save note. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while saving the note. Please try again.');
+        }
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const applyTheme = function(theme) {
+      const schemes = {
+        light: {
+          bodyBg: '#ffffff', boxBg: '#e6edf5', ayahBg: '#d8e3ed', textColor: '#000000', btnBg: '#88a9d3', btnTxt: '#000000', icon: 'light'
+        },
+        sepia: {
+          bodyBg: '#f4ecd8', boxBg: '#f1e5c8', ayahBg: '#f1d6b4', textColor: '#5b4636', btnBg: '#f1d6b4', btnTxt: '#5b4636', icon: 'sepia'
+        },
+        dark: {
+          bodyBg: '#040d21', boxBg: 'rgba(45,45,70,0.88)', ayahBg: '#150734', textColor: '#ffffff', btnBg: '#008CBA', btnTxt: '#ffffff', icon: 'dark'
+        }
+      };
+      let mode = theme;
+      if (theme === 'auto') {
+        mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      const cfg = schemes[mode] || schemes.dark;
+      document.body.style.backgroundColor = cfg.bodyBg;
+      document.querySelector('.box').style.backgroundColor = cfg.boxBg;
+      document.querySelectorAll('.ayah').forEach(a => a.style.backgroundColor = cfg.ayahBg);
+      document.querySelectorAll('body, h1, h2, h3, p, .translation, .arabic, .number, .fatiha').forEach(el => el.style.color = cfg.textColor);
+      document.querySelectorAll('button:not(#scrollTopBtn):not(.actions button)').forEach(b => { b.style.backgroundColor = cfg.btnBg; b.style.color = cfg.btnTxt; });
+      ['share', 'tafseer', 'copy', 'bookmark'].forEach(name => {
+        document.querySelectorAll(`.actions .${name} img`).forEach(img => {
+          img.src = "{{ url_for('static', filename='icons/') }}" + name + '_' + cfg.icon + '.svg';
+        });
+      });
+      document.querySelectorAll('.actions .play').forEach(btn => {
+        const img = btn.querySelector('img');
+        const isPlaying = btn.classList.contains('playing');
+        img.src = "{{ url_for('static', filename='icons/') }}" + (isPlaying ? 'pause' : 'play') + '_' + cfg.icon + '.svg';
+      });
+    };
+
+    const saved = localStorage.getItem('selectedTheme') || 'auto';
+    applyTheme(saved);
+  });
+</script>
+
+{% endblock %}

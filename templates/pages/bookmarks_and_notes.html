@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/bookmarks.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components/notes.css') }}">
+<style>
+  .tabs-container {
+    max-width: 1600px;
+    margin: 40px auto;
+    padding: 2rem;
+    background-color: #150734;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .tabs-header {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #2c1354;
+    padding-bottom: 1rem;
+  }
+
+  .tab-button {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .tab-button.active {
+    color: #FFD700;
+  }
+
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #FFD700;
+  }
+
+  .tab-button:hover {
+    color: #FFD700;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+</style>
+{% endblock %}
+
+{% block title %}Bookmarks & Notes - Al-Kitaab{% endblock %}
+
+{% block content %}
+<div class="tabs-container">
+  <div class="tabs-header">
+    <button class="tab-button active" data-tab="bookmarks">Bookmarks</button>
+    <button class="tab-button" data-tab="notes">Notes</button>
+  </div>
+
+  <div id="bookmarks-tab" class="tab-content active">
+    <div class="bookmarks-container">
+      {% if bookmarks %}
+      <ul class="bookmarks-list">
+        {% for bookmark in bookmarks %}
+        <li class="bookmark-item">
+          <div class="bookmark-header">
+            <div class="bookmark-title">
+              Surah {{ bookmark.surah_name }}
+            </div>
+            <div class="bookmark-date">
+              {{ bookmark.created_at.strftime('%Y-%m-%d %H:%M') }}
+            </div>
+          </div>
+          <div class="bookmark-content">
+            <p class="text-muted">Verse {{ bookmark.ayah_number }}</p>
+            {% if bookmark.bookmark_note %}
+            <p class="bookmark-note">{{ bookmark.bookmark_note }}</p>
+            {% endif %}
+          </div>
+          <div class="bookmark-actions">
+            <a href="{{ url_for('surah_page.display_surah', surah_id=bookmark.surah_number) }}#ayah-{{ bookmark.ayah_number }}" 
+               class="btn-view">Go to Verse</a>
+            <button class="btn-delete delete-bookmark" 
+                    data-bookmark-id="{{ bookmark.bookmark_id }}">
+              Remove Bookmark
+            </button>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="empty-state">
+        <p>You haven't added any bookmarks yet. Start reading and bookmark verses that inspire you!</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div id="notes-tab" class="tab-content">
+    <div class="notes-container">
+      {% if notes %}
+      <ul class="notes-list">
+        {% for note in notes %}
+        <li class="note-item">
+          <div class="note-header">
+            <div class="note-title">
+              Surah {{ note.surah_name }}
+            </div>
+            <div class="note-date">
+              {{ note.created_at.strftime('%Y-%m-%d %H:%M') }}
+            </div>
+          </div>
+          <div class="note-content">
+            <p class="text-muted">Verse {{ note.ayah_number }}</p>
+            <p class="note-text">{{ note.note_text }}</p>
+          </div>
+          <div class="note-actions">
+            <a href="{{ url_for('surah_page.display_surah', surah_id=note.surah_number) }}#ayah-{{ note.ayah_number }}" 
+               class="btn-view">Go to Verse</a>
+            <button class="btn-delete delete-note" 
+                    data-note-id="{{ note.note_id }}">
+              Delete Note
+            </button>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="empty-state">
+        <p>You haven't added any notes yet. Start reading and add your thoughts about verses that inspire you!</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab switching functionality
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const tabId = this.dataset.tab;
+      
+      // Update active states
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+      
+      this.classList.add('active');
+      document.getElementById(`${tabId}-tab`).classList.add('active');
+    });
+  });
+
+  // Bookmark deletion
+  const deleteBookmarkButtons = document.querySelectorAll('.delete-bookmark');
+  deleteBookmarkButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const bookmarkId = this.dataset.bookmarkId;
+      
+      fetch(`/delete-bookmark/${bookmarkId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          this.closest('.bookmark-item').remove();
+          
+          if (document.querySelectorAll('.bookmark-item').length === 0) {
+            const container = document.querySelector('.bookmarks-container');
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'empty-state';
+            emptyMessage.innerHTML = '<p>You haven\'t added any bookmarks yet. Start reading and bookmark verses that inspire you!</p>';
+            container.appendChild(emptyMessage);
+          }
+        } else {
+          alert('Failed to delete bookmark. Please try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      });
+    });
+  });
+
+  // Note deletion
+  const deleteNoteButtons = document.querySelectorAll('.delete-note');
+  deleteNoteButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const noteId = this.dataset.noteId;
+      
+      fetch(`/delete-note/${noteId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          this.closest('.note-item').remove();
+          
+          if (document.querySelectorAll('.note-item').length === 0) {
+            const container = document.querySelector('.notes-container');
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'empty-state';
+            emptyMessage.innerHTML = '<p>You haven\'t added any notes yet. Start reading and add your thoughts about verses that inspire you!</p>';
+            container.appendChild(emptyMessage);
+          }
+        } else {
+          alert('Failed to delete note. Please try again.');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      });
+    });
+  });
+});
+</script>
+{% endblock %} 

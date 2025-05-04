@@ -1,0 +1,185 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Al-Kitab Settings</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/settings.css') }}">
+</head>
+<body>
+    <div class="settings-container">
+        <!-- Sidebar Header -->
+        <header class="settings-header">
+            <img src="{{ url_for('static', filename='icons/settings.png') }}" alt="Settings Icon">
+            <h2>Settings</h2>
+        </header>
+
+        <!-- Theme Section -->
+        <section class="theme-section">
+            <h3>Theme</h3>
+            <div class="theme-options">
+                <div class="theme-option">
+                    <label>
+                        <input type="radio" name="theme" value="auto" checked>
+                        <div class="theme-preview auto">
+                            <div class="preview-header"></div>
+                            <div class="preview-content">
+                                <div class="preview-text">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
+                            </div>
+                        </div>
+                        <span>Auto</span>
+                    </label>
+                </div>
+                <div class="theme-option">
+                    <label>
+                        <input type="radio" name="theme" value="light">
+                        <div class="theme-preview light">
+                            <div class="preview-header"></div>
+                            <div class="preview-content">
+                                <div class="preview-text">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
+                            </div>
+                        </div>
+                        <span>Light</span>
+                    </label>
+                </div>
+                <div class="theme-option">
+                    <label>
+                        <input type="radio" name="theme" value="sepia">
+                        <div class="theme-preview sepia">
+                            <div class="preview-header"></div>
+                            <div class="preview-content">
+                                <div class="preview-text">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
+                            </div>
+                        </div>
+                        <span>Sepia</span>
+                    </label>
+                </div>
+                <div class="theme-option">
+                    <label>
+                        <input type="radio" name="theme" value="dark">
+                        <div class="theme-preview dark">
+                            <div class="preview-header"></div>
+                            <div class="preview-content">
+                                <div class="preview-text">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
+                            </div>
+                        </div>
+                        <span>Dark</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quran Font Section -->
+        <section class="quran-font-section">
+            <h3>Quran Font</h3>
+            <div class="font-options">
+                <label for="quranFont">Font Type:</label>
+                <select id="quranFont">
+                    <option value="uthmani" selected>Uthmani</option>
+                    <option value="indopak">IndoPak</option>
+                    <option value="tajweed">Tajweed</option>
+                </select>
+            </div>
+
+            <div class="font-style">
+                <label for="fontStyle">Style:</label>
+                <select id="fontStyle">
+                    <option value="kingFahadComplex" selected>King Fahad Complex</option>
+                    <option value="v1">King Fahad Complex V1</option>
+                    <option value="v2">King Fahad Complex V2</option>
+                </select>
+            </div>
+
+            <div class="font-size">
+                <label for="fontSize">Font Size</label>
+                <input type="range" id="fontSize" min="1" max="5" value="2" step="0.5">
+                <span id="fontSizeValue">2</span>
+            </div>
+
+            <p class="sample-text">
+                بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ
+            </p>
+        </section>
+
+        <!-- Word By Word Section -->
+        <section class="word-by-word">
+            <h3>Word By Word</h3>
+            <label><input type="checkbox" name="translation" checked> Translation</label>
+            <label><input type="checkbox" name="transliteration"> Transliteration</label>
+            <label><input type="checkbox" name="recitation"> Recitation</label>
+        </section>
+    </div>
+    <script src="/../static/theme.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const themeRadios = document.querySelectorAll('input[name="theme"]');
+            const settingsIcon = document.querySelector('.settings-header img');
+            const fontSizeSlider = document.getElementById('fontSize');
+            const fontSizeValue = document.getElementById('fontSizeValue');
+            const sampleText = document.querySelector('.sample-text');
+        
+            // Font size functionality
+            function updateFontSize(value) {
+                const size = parseFloat(value);
+                fontSizeValue.textContent = size;
+                sampleText.style.fontSize = `${1.2 + (size * 0.2)}rem`;
+                
+                // Save to localStorage
+                localStorage.setItem('quranFontSize', value);
+                
+                // Broadcast font size change to all open windows
+                window.parent.postMessage({
+                    type: 'fontSizeChange',
+                    value: size
+                }, '*');
+                
+                // Also update the current window if it's the surah page
+                if (window.applyFontSize) {
+                    window.applyFontSize(size);
+                }
+            }
+            
+            // Initialize font size
+            const savedFontSize = localStorage.getItem('quranFontSize') || '2';
+            fontSizeSlider.value = savedFontSize;
+            updateFontSize(savedFontSize);
+            
+            // Listen for font size changes
+            fontSizeSlider.addEventListener('input', (e) => updateFontSize(e.target.value));
+        
+            function updateSettingsIcon(theme) {
+                switch (theme) {
+                    case "light":
+                        settingsIcon.src = "{{ url_for('static', filename='icons/settings_light.svg') }}";
+                        break;
+                    case "sepia":
+                        settingsIcon.src = "{{ url_for('static', filename='icons/settings_sepia.svg') }}";
+                        break;
+                    case "dark":
+                        settingsIcon.src = "{{ url_for('static', filename='icons/settings.png') }}";
+                        break;
+                    case "auto":
+                        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                        updateSettingsIcon(prefersDark ? "dark" : "light");
+                        break;
+                    default:
+                        settingsIcon.src = "{{ url_for('static', filename='icons/settings.png') }}";
+                }
+            }
+        
+            // Apply the saved theme icon on load
+            const savedTheme = localStorage.getItem("selectedTheme") || "auto";
+            updateSettingsIcon(savedTheme);
+        
+            // Listen to radio changes and update icon
+            themeRadios.forEach(radio => {
+                radio.addEventListener("change", () => {
+                    const selected = radio.value;
+                    localStorage.setItem("selectedTheme", selected);
+                    updateSettingsIcon(selected);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

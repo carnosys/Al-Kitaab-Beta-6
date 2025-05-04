@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome & Customization</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components/user-info.css') }}">
+</head>
+<body>
+  <div class="user-info-container">
+    <div class="user-info-form">
+      <h1>Welcome! Let's Get You Set Up</h1>
+      
+      {% if error %}
+        <div class="error-message">{{ error }}</div>
+      {% endif %}
+
+      <form action="{{ url_for('views.user_info') }}" method="post">
+        <!-- 1. Personal Details -->
+        <fieldset>
+          <legend>Personal Details</legend>
+
+          <label>
+            Gender:
+            <select name="gender" required>
+              <option value="">Select…</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </label>
+
+          <label>
+            Preferred Language:
+            <select name="preferred_language" required>
+              <option value="en">English</option>
+              <option value="ar">Arabic</option>
+              <option value="ur">Urdu</option>
+              <!-- add more as needed -->
+            </select>
+          </label>
+
+          <label>
+            Location (Country/Region):
+            <input type="text" name="country" placeholder="e.g. Pakistan" required>
+          </label>
+
+          <label>
+            Preferred Script:
+            <div class="inline">
+              <input type="radio" name="preferred_script" value="indopak" checked> IndoPak
+            </div>
+            <div class="inline">
+              <input type="radio" name="preferred_script" value="uthmani"> Uthmani
+            </div>
+          </label>
+        </fieldset>
+
+        <!-- 2. Reading Goal -->
+        <fieldset>
+          <legend>Reading Goal</legend>
+
+          <label>
+            Verses per Session:
+            <input type="number" name="verses_per_session" min="1" required>
+          </label>
+
+          <label>
+            Preferred Reading Window:
+            <div style="display: flex; gap: 1rem; align-items: center;">
+              <input type="time" name="window_start" required>
+              <span>to</span>
+              <input type="time" name="window_end" required>
+            </div>
+          </label>
+        </fieldset>
+
+        <!-- 3. Reminder Schedule -->
+        <fieldset>
+          <legend>Reminder Schedule</legend>
+
+          <label class="inline">
+            <input type="radio" name="reminder_freq" value="daily" checked> Every Day
+          </label>
+          <label class="inline">
+            <input type="radio" name="reminder_freq" value="weekly"> Every Week
+          </label>
+          <label class="inline">
+            <input type="radio" name="reminder_freq" value="custom"> Custom Interval
+          </label>
+
+          <div id="custom-interval">
+            <label>
+              Notify me every
+              <input type="number" name="interval_hours" min="0" max="23" value="0"> h
+              <input type="number" name="interval_minutes" min="0" max="59" value="0"> m
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="submit">Save Preferences</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Show/hide custom interval inputs
+    const radios = document.querySelectorAll('input[name="reminder_freq"]');
+    const customDiv = document.getElementById('custom-interval');
+
+    radios.forEach(r => {
+      r.addEventListener('change', () => {
+        customDiv.style.display = (r.value === 'custom' && r.checked)
+          ? 'block'
+          : 'none';
+      });
+    });
+  </script>
+</body>
+</html>

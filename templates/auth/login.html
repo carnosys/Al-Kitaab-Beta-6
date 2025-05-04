@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Login Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/login.css') }}">
+</head>
+<body>
+    <div class="container" data-bg-image="{{ url_for('static', filename='images/backgroundImage1.jpg') }}">
+        <div class="form-box">
+            <h1 id="title">Sign In</h1>
+            <form action="{{ url_for('views.login') }}" method="POST" id="loginForm">
+                <!-- Username (always visible) -->
+                <div class="input-field">
+                    <img src="{{ url_for('static', filename='icons/user-solid.svg') }}" alt="user-icon">
+                    <input type="text" name="username" id="username" placeholder="Enter your username." required>
+                </div>
+
+                <!-- Email (hidden by default) -->
+                <div class="input-field" id="emailField">
+                    <img src="{{ url_for('static', filename='icons/envelope-solid.svg') }}" alt="email-icon">
+                    <input type="email" name="email" id="user-mail" placeholder="Enter your email.">
+                </div>
+
+                <!-- Password (always visible) -->
+                <div class="input-field">
+                    <img src="{{ url_for('static', filename='icons/lock-solid.svg') }}" alt="">
+                    <input type="password" name="password" id="password" placeholder="Enter your password." required>
+                </div>
+
+                <p>Lost Your Password? <a href="#">Click Here!</a></p>
+                <div class="btn-field">
+                    <button type="submit" id="signinBtn" name="action" value="signin" class="active">Sign In</button>
+                    <button type="submit" id="signupBtn" name="action" value="signup">Sign Up</button>
+                </div>
+            </form>
+
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const signupBtn = document.getElementById('signupBtn');
+        const signinBtn = document.getElementById('signinBtn');
+        const emailField = document.getElementById('emailField');
+        const title = document.getElementById('title');
+        const container = document.querySelector('.container');
+
+        // Set background image with repeating pattern (4-5 times)
+        container.style.backgroundImage = `linear-gradient(rgba(0,0,50,0.5),rgba(0,0,50,0.5)), url(${container.dataset.bgImage})`;
+        container.style.backgroundSize = '25% 25%';
+        container.style.backgroundRepeat = 'repeat';
+
+        // Hide email field initially (Sign In mode)
+        emailField.style.maxHeight = '0px';
+
+        signinBtn.onclick = () => {
+            emailField.style.maxHeight = '0px';
+            document.getElementById('user-mail').removeAttribute('required');
+            title.innerHTML = "Sign In";
+            signinBtn.classList.add('active');
+            signupBtn.classList.remove('active');
+        }
+
+        signupBtn.onclick = () => {
+            emailField.style.maxHeight = '65px';
+            document.getElementById('user-mail').setAttribute('required', '');
+            title.innerHTML = "Sign Up";
+            signupBtn.classList.add('active');
+            signinBtn.classList.remove('active');
+        }
+    </script>
+</body>
+</html>

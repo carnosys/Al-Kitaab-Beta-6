@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Al-Kitab</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block styles %} {% endblock %}
+</head>
+<body>
+    <header>
+        <!-- Logo Section -->
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Al-kitab Logo">
+        </div>
+
+        <!-- Title Section -->
+        <div class="header-title" id="header-title">
+            <span>Al-kitab.com</span>
+        </div>
+
+        <!-- User Menu Section -->
+        <div class="user-menu">
+            <nav>
+                <ul>
+                    <li><a href="#">
+                        <span>{{ username }}</span>
+                    </a></li>
+                    <li>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='icons/menu_light.svg') }}" alt="menu logo" data-base-path="{{ url_for('static', filename='icons/') }}" data-icon-name="menu">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='icons/user-solid.svg') }}" alt="user account logo" id="account-btn" data-base-path="{{ url_for('static', filename='icons/') }}" data-icon-name="user-solid">
+                        </a>
+                        <!-- Dropdown Menu -->
+                        <ul class="dropdown-menu" id="account-dropdown">
+                            <li><a href="/profile-settings">Account Settings</a></li>
+                            <li><a href="{{ url_for('views.bookmarks_and_notes') }}">Bookmarks and Notes</a></li>
+                            <li><a href="/goal-settings">Goal Settings</a></li>
+                            <li><a href="{{ url_for('views.logout') }}">Logout</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/progress-and-analytics">
+                            <img src="{{ url_for('static', filename='icons/analytics_light.svg') }}" alt="analytics logo" data-base-path="{{ url_for('static', filename='icons/') }}" data-icon-name="analytics">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/settings">
+                            <img src="{{ url_for('static', filename='icons/settings_light.svg') }}" alt="settings logo" data-base-path="{{ url_for('static', filename='icons/') }}" data-icon-name="settings">
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    {% block content %} {% endblock %}
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Al-Kitab</h3>
+                <p>Al-Kitab is a platform that helps you read and understand the Quran. We provide tools to help you set goals, track your progress, and understand the Quran better.</p>
+            </div>
+            
+            <div class="footer-section" id="contact-us-list">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><a id="contact-us-list1" href="#">Email</a></li>
+                    <li><a id="contact-us-list2" href="#">Phone</a></li>
+                    <li><a id="contact-us-list3" href="#">Address</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Al-Kitab. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript -->
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %} {% endblock %}
+</body>
+</html>

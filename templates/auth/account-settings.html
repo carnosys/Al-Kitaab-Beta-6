@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/account-settings.css') }}">
+</head>
+<body>
+    <div class="account-settings-container">
+        <h1>Account Settings</h1>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+            <div class="success-message">{{ success }}</div>
+        {% endif %}
+
+        <form action="{{ url_for('views.account_settings') }}" method="post">
+            <!-- Personal Details Section -->
+            <div class="setting-section">
+                <h2>Personal Details</h2>
+                
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select name="gender" id="gender" required>
+                        <option value="">Select...</option>
+                        <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+                        <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+                        <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other / Prefer not to say</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="preferred_language">Preferred Language</label>
+                    <select name="preferred_language" id="preferred_language" required>
+                        <option value="en" {% if user.preferred_language == 'en' %}selected{% endif %}>English</option>
+                        <option value="ar" {% if user.preferred_language == 'ar' %}selected{% endif %}>Arabic</option>
+                        <option value="ur" {% if user.preferred_language == 'ur' %}selected{% endif %}>Urdu</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Location (Country/Region)</label>
+                    <input type="text" name="country" id="country" value="{{ user.country }}" required>
+                </div>
+            </div>
+
+            <!-- Email Section -->
+            <div class="setting-section">
+                <h2>Email Address</h2>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" value="{{ user.email }}" required>
+                </div>
+            </div>
+
+            <!-- Password Verification Section -->
+            <div class="password-verification">
+                <h3>Verify Your Password</h3>
+                <div class="form-group">
+                    <label for="password">Current Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-save">Save Changes</button>
+        </form>
+    </div>
+</body>
+</html> 

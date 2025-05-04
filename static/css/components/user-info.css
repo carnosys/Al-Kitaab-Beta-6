@@ -1,0 +1,254 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    background-image: linear-gradient(rgba(0,0,50,0.8),rgba(0,0,50,0.8)),url("night-sky.jpg");
+    background-position: center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.form-box {
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    padding: 30px;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+.form-box h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #3c00a0;
+    position: relative;
+}
+
+.form-box h1::after {
+    content: '';
+    width: 30px;
+    height: 4px;
+    border-radius: 3px;
+    background: #3c00a0;
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.input-field {
+    margin: 15px 0;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-wrapper label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.input-wrapper input, .input-wrapper select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.input-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-group .input-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.input-group input {
+    width: auto;
+}
+
+.btn-field {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn-field button {
+    background: #3c00a0;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-field button:hover {
+    background: #290076;
+}
+
+/* User Info Form Styles */
+.user-info-container {
+    background-color: #030916;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+.user-info-form {
+    background-color: #150734;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 600px;
+    color: white;
+}
+
+.user-info-form h1 {
+    color: #FFD700;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    position: relative;
+}
+
+.user-info-form h1::after {
+    content: '';
+    width: 50px;
+    height: 4px;
+    background: #FFD700;
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.user-info-form fieldset {
+    border: 1px solid #2c1354;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.user-info-form legend {
+    color: #FFD700;
+    font-size: 1.2rem;
+    padding: 0 0.5rem;
+}
+
+.user-info-form label {
+    display: block;
+    margin-bottom: 1rem;
+    color: #ccc;
+}
+
+.user-info-form select,
+.user-info-form input[type="text"],
+.user-info-form input[type="number"],
+.user-info-form input[type="time"] {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #030916;
+    border: 1px solid #2c1354;
+    border-radius: 8px;
+    color: white;
+    margin-top: 0.5rem;
+}
+
+.user-info-form select:focus,
+.user-info-form input:focus {
+    outline: none;
+    border-color: #FFD700;
+}
+
+.user-info-form .inline {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 1rem;
+    cursor: pointer;
+}
+
+.user-info-form input[type="radio"] {
+    margin-right: 0.5rem;
+    accent-color: #FFD700;
+}
+
+#custom-interval {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #030916;
+    border-radius: 8px;
+}
+
+#custom-interval input[type="number"] {
+    width: 60px;
+    margin: 0 0.5rem;
+}
+
+.user-info-form button[type="submit"] {
+    background-color: #FFD700;
+    color: #030916;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.user-info-form button[type="submit"]:hover {
+    background-color: #ffd900;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Error message styling */
+.error-message {
+    color: #ff6b6b;
+    background-color: rgba(255, 107, 107, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .user-info-form {
+        padding: 1.5rem;
+    }
+    
+    .user-info-form fieldset {
+        padding: 1rem;
+    }
+}
+    

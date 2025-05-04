@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="../static/styles.css">
+{% endblock %}   
+
+{% block content %}
+
+<script>
+// Make surahs available globally
+const globalSurahs = {{ surahs|tojson|safe }};
+
+// Add click handler for continue reading card
+document.addEventListener('DOMContentLoaded', function() {
+    const continueReadingCard = document.getElementById('continue-reading-card');
+    if (continueReadingCard) {
+        continueReadingCard.addEventListener('click', function() {
+            const lastSeenInfo = localStorage.getItem('lastSeenInfo');
+            if (lastSeenInfo) {
+                const { surahId, ayahId } = JSON.parse(lastSeenInfo);
+                window.location.href = `/surah/${surahId}#ayah-${ayahId}`;
+            } else {
+                // Use server-side last seen info if available
+                {% if last_seen_info %}
+                window.location.href = `/surah/{{ last_seen_info.surah_number }}#ayah-{{ last_seen_info.ayah_number }}`;
+                {% else %}
+                // Default to first surah and ayah if no last seen info
+                window.location.href = '/surah/1#ayah-1';
+                {% endif %}
+            }
+        });
+    }
+
+    // Load ayah of the day
+    loadAyahOfTheDay();
+});
+
+// Function to load ayah of the day
+async function loadAyahOfTheDay() {
+    try {
+        console.log('Fetching ayah of the day...');
+        const response = await fetch('/get-ayah-of-the-day');
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (data.status === 'success') {
+            const ayah = data.ayah;
+            const ayahCard = document.getElementById('ayah-card');
+            
+            // Update the card content
+            ayahCard.innerHTML = `
+                <div class="ayah-text">${ayah.text}</div>
+                <div class="ayah-reference">
+                    <span>${ayah.surah_number}. ${ayah.surah_name}</span>
+                    <span>Verse ${ayah.ayah_number}</span>
+                </div>
+            `;
+            
+            // Make the card clickable
+            ayahCard.style.cursor = 'pointer';
+            ayahCard.addEventListener('click', function() {
+                window.location.href = `/surah/${ayah.surah_number}#ayah-${ayah.ayah_number}`;
+            });
+        } else {
+            console.error('Failed to load ayah of the day:', data.message);
+            const ayahCard = document.getElementById('ayah-card');
+            ayahCard.innerHTML = `
+                <div class="ayah-text">Failed to load ayah. Please try again later.</div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading ayah of the day:', error);
+        const ayahCard = document.getElementById('ayah-card');
+        ayahCard.innerHTML = `
+            <div class="ayah-text">Error loading ayah. Please try again later.</div>
+        `;
+    }
+}
+
+function updateContinueReading(surahId, ayahId) {
+    // Get the surah details from the surahs object
+    const surah = globalSurahs[surahId];
+    if (!surah) return;
+
+    // Update the Arabic name
+    document.querySelector('.reading-name-arabic').textContent = surah.arabic_name;
+    
+    // Update the details
+    const details = document.querySelector('.reading-details');
+    details.innerHTML = `
+        <span>${surahId}. ${surah.name}</span>
+        <span>Verse ${ayahId}</span>
+    `;
+
+    // Store in localStorage for quick access
+    localStorage.setItem('lastSeenInfo', JSON.stringify({
+        surahId,
+        ayahId,
+        timestamp: new Date().getTime()
+    }));
+}
+
+// Check for last seen updates periodically
+function checkLastSeen() {
+    const lastSeenInfo = localStorage.getItem('lastSeenInfo');
+    if (lastSeenInfo) {
+        const { surahId, ayahId, timestamp } = JSON.parse(lastSeenInfo);
+        // Only update if the info is less than 5 minutes old
+        if (new Date().getTime() - timestamp < 300000) {
+            updateContinueReading(surahId, ayahId);
+        }
+    }
+}
+
+// Check for updates every second
+setInterval(checkLastSeen, 1000);
+
+// Initial check
+checkLastSeen();
+</script>
+
+<section class="section-1">
+    <div class="search-container">
+        <input type="text" placeholder="Search Here It is for You">
+    </div>
+
+    <div class="quick-links">
+        <div class="reading-options" id="reading-options">
+            <span>Surah of the Day:</span>
+            <button class="tag">Alkahf</button>
+            <button class="tag">Ayat Kursi</button>
+            <button class="tag">Alhaqqah</button>
+            <button class="tag">ArRahman</button>
+            <button class="tag">Qaf</button>
+        </div>
+    </div>
+
+    <div class="container-1">
+        <div class="continue-reading">
+            <h2>Continue Reading</h2>
+            <div class="reading-card" id="continue-reading-card">
+                <div class="reading-info">
+                    {% if last_seen_info %}
+                    <div class="reading-name-arabic">{{ last_seen_info.surah_name_arabic }}</div>
+                    <div class="reading-details">
+                        <span>{{ last_seen_info.surah_number }}. {{ last_seen_info.surah_name }}</span>
+                        <span>Verse {{ last_seen_info.ayah_number }}</span>
+                    </div>
+                    {% else %}
+                    <div class="reading-name-arabic">الفاتحة</div>
+                    <div class="reading-details">
+                        <span>1. Al-Fatihah (The Opener)</span>
+                        <span>Verse 1</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="reading-actions" style="margin-top: 20px;">
+                    <button class="btn-set-goal">Set a Goal</button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="streak-container">
+            <div class="streak-score">
+                <h2>Streak Score</h2>
+                <div class="streak-card" id="streak-card">
+                    <span>{{ current_streak if current_streak is defined else 0 }} day streak</span>
+                </div>
+            </div>
+        
+            <div class="weekly-streaks">
+                <h2>Weekly Streaks</h2>
+                <div class="weekly-card" id="weekly-card">
+                    <span>Grow with us this Ramadan</span>
+                </div>
+            </div>
+        </div>
+    
+        <div class="ayah-of-the-day">
+            <h2>Ayah of the Day</h2>
+            <div class="ayah-card" id="ayah-card">
+                <div class="ayah-text">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<main class="surah-grid">
+    {% for surah in surahs.values() %}
+    <a href="/surah/{{surah.number}}" class="surah-card">
+        <div class="surah-number">{{surah.number}}</div>
+        <div class="surah-info">
+            <h3>{{surah.name}}</h3>
+            <div class="surah-meta">
+                <span>{{surah.revelation}}</span>
+                <span>7 Ayat</span>
+            </div>
+        </div>
+        <div class="surah-name-arabic">{{surah.arabic_name}}</div>
+    </a>
+    {% endfor %}
+</main>
+
+<div class="settings-links">
+    <a href="{{ url_for('views.bookmarks_and_notes') }}" class="settings-link">
+        <img src="{{ url_for('static', filename='icons/bookmark.svg') }}" alt="Bookmarks & Notes">
+        <span>Bookmarks & Notes</span>
+    </a>
+</div>
+
+{% endblock %}        
+    
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/streak.js') }}"></script>
+{% endblock %}        

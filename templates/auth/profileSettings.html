@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/profileSetting.css') }}">
+</head>
+
+<body>
+    <div class="account-settings-container">
+        <h1>Profile Settings</h1>
+
+        {% if error %}
+            <div class="error-message">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+            <div class="success-message">{{ success }}</div>
+        {% endif %}
+
+        <form action="{{ url_for('views.profile_settings') }}" method="post">
+            <!-- Personal Details Section -->
+            <div class="setting-section">
+                <h2>Personal Details</h2>
+                
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select name="gender" id="gender" required>
+                        <option value="">Select...</option>
+                        <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+                        <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+                        <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other / Prefer not to say</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="preferred_language">Preferred Language</label>
+                    <select name="preferred_language" id="preferred_language" required>
+                        <option value="en" {% if user.preferred_language == 'en' %}selected{% endif %}>English</option>
+                        <option value="ar" {% if user.preferred_language == 'ar' %}selected{% endif %}>Arabic</option>
+                        <option value="ur" {% if user.preferred_language == 'ur' %}selected{% endif %}>Urdu</option>
+            </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Location (Country/Region)</label>
+                    <input type="text" name="country" id="country" value="{{ user.country }}" required>
+                </div>
+            </div>
+
+            <!-- Email Section -->
+            <div class="setting-section">
+                <h2>Email Address</h2>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" value="{{ user.user_email }}" required>
+                </div>
+            </div>
+
+            <!-- Password Verification Section -->
+            <div class="password-verification">
+                <h3>Verify Your Password</h3>
+                <div class="form-group">
+                    <label for="password">Current Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-save">Save Changes</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const savedTheme = localStorage.getItem("selectedTheme");
+            const body = document.body;
+            const saveButton = document.querySelector("button");
+            const container = document.querySelector(".settings-container");
+            const sections = document.querySelectorAll(".setting-section");
+            const allTextElements = document.querySelectorAll("body, h1, h2, label");
+            const allInputs = document.querySelectorAll("input, select, textarea");
+        
+            function applyTheme(theme) {
+                switch (theme) {
+                    case "light":
+                        body.style.backgroundColor = "#ffffff";
+                        container.style.backgroundColor = "#d8e3ed";
+                        sections.forEach(section => {
+                            section.style.backgroundColor = "#ebf0f6";
+                        });
+                        saveButton.style.backgroundColor = "#f9f9f9";
+                        saveButton.style.color = "#000000";
+        
+                        allTextElements.forEach(el => {
+                            el.style.color = "#000000";
+                        });
+                        allInputs.forEach(el => {
+                            el.style.border = "1px solid #000000";
+                            el.style.color = "#000000";
+                            el.style.backgroundColor = "#ffffff";
+                        });
+                        break;
+        
+                    case "sepia":
+                        body.style.backgroundColor = "#f4ecd8";
+                        container.style.backgroundColor = "#f1d6b4";
+                        sections.forEach(section => {
+                            section.style.backgroundColor = "#f4ecd8";
+                        });
+                        saveButton.style.backgroundColor = "#f4ecd8";
+                        saveButton.style.color = "#5b4636";
+        
+                        allTextElements.forEach(el => {
+                            el.style.color = "#5b4636";
+                        });
+                        allInputs.forEach(el => {
+                            el.style.border = "1px solid #5b4636";
+                            el.style.color = "#5b4636";
+                            el.style.backgroundColor = "#fef9f1";
+                        });
+                        break;
+        
+                    case "dark":
+                        // Restore default dark theme styles from CSS
+                        body.style.backgroundColor = "#030916";
+                        container.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                        sections.forEach(section => {
+                            section.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                        });
+                        saveButton.style.backgroundColor = "#150734";
+                        saveButton.style.color = "white";
+        
+                        allTextElements.forEach(el => {
+                            el.style.color = "white";
+                        });
+                        allInputs.forEach(el => {
+                            el.style.border = "1px solid black";
+                            el.style.color = "black";
+                            el.style.backgroundColor = "white";
+                        });
+                        break;
+        
+                    case "auto":
+                        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                        applyTheme(prefersDark ? "dark" : "light");
+                        break;
+        
+                    default:
+                        applyTheme("dark");
+                }
+            }
+        
+            applyTheme(savedTheme || "auto");
+        });
+        </script>
+        
+</body>
+
+</html>

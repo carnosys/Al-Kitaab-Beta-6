@@ -1,0 +1,16 @@
+/* Main CSS file that imports all other CSS files */
+
+/* Layout */
+@import url('layout/base.css');
+@import url('layout/styles.css');
+
+/* Components */
+@import url('components/user-info.css');
+@import url('components/settings.css');
+@import url('components/surahPage.css');
+@import url('components/login.css');
+@import url('components/profileSetting.css');
+@import url('components/progressAndAnalytics.css');
+
+/* Themes */
+/* Add theme-specific CSS imports here if needed */ 

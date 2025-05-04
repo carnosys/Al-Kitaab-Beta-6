@@ -1,0 +1,432 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Al-Kitab</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/base.css">
+    {% block styles %} {% endblock %}
+
+</head>
+<body>
+    <header>
+        <!-- Logo Section -->
+        <div class="logo">
+            <img src="../static/logo.png" alt="Al-kitab Logo">
+        </div>
+
+        <!-- Title Section -->
+        <div class="header-title" id="header-title">
+            <span>Al-kitab.com</span>
+        </div>
+
+        <!-- User Menu Section -->
+        <div class="user-menu">
+            <nav>
+                <ul>
+                    <li><a href="#">
+                        <span>{{ username }}</span> <!-- Display the username here -->
+                    </a></li>
+                    <li>
+                        <a href="#">
+                            <img src="../static/menu.png" alt="menu logo">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <img src="../static/account.png" alt="user account logo" id="account-btn">
+                        </a>
+                        <!-- Dropdown Menu -->
+                        <ul class="dropdown-menu" id="account-dropdown">
+                            <li><a href="/profile-settings">Account Settings</a></li>
+                            <li><a href="#">Notes and Book Marks</a></li>
+                            <li><a href="#">Goal Settings</a></li>
+                            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/progress-and-analytics">
+                            <img src="../static/analytics.png" alt="analytics logo">
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/settings">
+                            <img src="../static/settings.png" alt="settings logo">
+                        </a>
+                    </li>
+                    <li>
+                        <button class="header-mic" title="Verse Recognition" style="background:none;border:none;cursor:pointer;padding:0;margin-left:8px;">
+                            <img src="../static/mic.svg" alt="Microphone" width="28" height="28">
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    {% block content %} {% endblock %}
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Al-Kitab</h3>
+                <p>Al-Kitab is a platform that helps you read and understand the Quran. We provide tools to help you set goals, track your progress, and understand the Quran better.</p>
+            </div>
+            
+            <div class="footer-section" id="contact-us-list">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><a id="contact-us-list1" href="#">Email</a></li>
+                    <li><a id="contact-us-list2" href="#">Phone</a></li>
+                    <li><a id="contact-us-list3" href="#">Address</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Al-Kitab. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        // Original script without sidebar toggle logic
+        const accountBtn = document.getElementById('account-btn');
+        const accountDropdown = document.getElementById('account-dropdown');
+
+        accountBtn.addEventListener('click', function (event) {
+            event.preventDefault();
+            accountDropdown.classList.toggle('show');
+        });
+
+        window.addEventListener('click', function (event) {
+            if (!accountBtn.contains(event.target) && !accountDropdown.contains(event.target)) {
+                accountDropdown.classList.remove('show');
+            }
+        });
+    </script>
+        <script>document.addEventListener("DOMContentLoaded", function () {
+            const theme = localStorage.getItem("selectedTheme") || "dark";
+        
+            const body = document.body;
+            const header = document.querySelector("header");
+            const footer = document.querySelector("footer");
+            const footerContent = document.querySelector(".footer-content");
+            const footerBottom = document.querySelector(".footer-bottom");
+        
+            const continueReading = document.querySelector(".continue-reading");
+            const readingCard = document.querySelector(".reading-card");
+        
+            const streakScore = document.querySelector(".streak-score");
+            const weeklyStreaks = document.querySelector(".weekly-streaks");
+            const ayahOfTheDay = document.querySelector(".ayah-of-the-day");
+        
+            
+        
+            const streakCards = document.querySelectorAll(".streak-card, .weekly-card, .ayah-card");
+        
+            applyTheme(theme); // Apply theme on load
+        
+            function applyTheme(theme) {
+                switch (theme) {
+                    case 'light':
+        
+                        document.querySelector("#header-title span").style.color='black';            
+                        body.style.backgroundColor = '#ffffff';
+                        body.style.color = 'black';
+        
+                        header.style.backgroundColor = '#d8e3ed';
+                        header.style.color = 'black';
+        
+                        footer.style.backgroundColor = '#d8e3ed';
+                        footer.style.color = 'black';
+        
+                        footerContent.style.backgroundColor = '#ffffff';
+                        footerContent.style.color = 'black';
+        
+                        footerBottom.style.backgroundColor = '#ffffff';
+                        footerBottom.style.color = 'black';
+        
+                        document.querySelector("#reading-options span").style.color='black';
+                        document.querySelectorAll("#reading-options .tag").forEach(btn => btn.style.color = "black");
+                        document.querySelectorAll("#reading-options .tag").forEach(btn => btn.style.backgroundColor = "#d8e3ed");
+                        
+        
+                        document.querySelectorAll('.surah-card').forEach(el => {el.style.backgroundColor = '#d8e3ed';});
+        
+                        if (continueReading) {
+                            continueReading.style.backgroundColor = '#d8e3ed';
+                            continueReading.style.color = 'black';
+                        }
+        
+                        if (readingCard) {
+                            readingCard.style.backgroundColor = '#ffffff';
+                            readingCard.style.color = 'black';
+                            document.querySelector(".reading-name-arabic").style.color='black'
+                            document.querySelector(".reading-details").style.color='black'
+        
+                        }
+        
+                        if (streakScore) {
+                            streakScore.style.backgroundColor = '#d8e3ed';
+                            streakScore.style.color = 'black';
+                            document.querySelector("#streak-card span").style.color='black';
+        
+                        }
+        
+                        if (weeklyStreaks) {
+                            weeklyStreaks.style.backgroundColor = '#d8e3ed';
+                            weeklyStreaks.style.color = 'black';
+                            document.querySelector("#weekly-card span").style.color='black';
+        
+                            
+                        }
+        
+                        if (ayahOfTheDay) {
+                            ayahOfTheDay.style.backgroundColor = '#d8e3ed';
+                            ayahOfTheDay.style.color = 'black';
+                            document.querySelector("#ayah-card span").style.color='black';
+        
+                        }
+        
+                        document.querySelector("#contact-us-list1").style.color='black';
+                        document.querySelector("#contact-us-list2").style.color='black';
+                        document.querySelector("#contact-us-list3").style.color='black';
+        
+        
+                        streakCards.forEach(card => {
+                            card.style.backgroundColor = '#ffffff';
+                            card.style.color = 'black';
+                        });
+                        break;
+        
+                    case 'sepia':
+        
+                    document.querySelector("#header-title span").style.color='#5b4636';  
+                        body.style.backgroundColor = '#f4ecd8';
+                        body.style.color = '#5b4636';
+        
+                        header.style.backgroundColor = '#f1d6b4';
+                        header.style.color = '#5b4636';
+        
+                        footer.style.backgroundColor = '#f1d6b4';
+                        footer.style.color = '#5b4636';
+        
+                        footerContent.style.backgroundColor = '#f4ecd8';
+                        footerContent.style.color = '#5b4636';
+        
+                        footerBottom.style.backgroundColor = '#f4ecd8';
+                        footerBottom.style.color = '#5b4636';
+        
+                        document.querySelector("#reading-options span").style.color='#5b4636';
+                        document.querySelectorAll("#reading-options .tag").forEach(btn => btn.style.color = "#5b4636");
+                        document.querySelectorAll("#reading-options .tag").forEach(btn => btn.style.backgroundColor = "#e9d9b0");
+        
+                        document.querySelectorAll('.surah-card').forEach(el => {el.style.backgroundColor = '#f1d6b4';});
+                        
+                        if (continueReading) {
+                            continueReading.style.backgroundColor = '#f1d6b4';
+                            continueReading.style.color = '#5b4636';
+                            document.querySelector(".reading-name-arabic").style.color='#5b4636'
+                            document.querySelector(".reading-details").style.color='#5b4636'
+                            readingCard.style.backgroundColor='#f4ecd8';
+                        }
+        
+                        if (streakScore) {
+                            streakScore.style.backgroundColor = '#f1d6b4';
+                            streakScore.style.color = '#5b4636';
+                            document.querySelector("#streak-card span").style.color='#5b4636';
+        
+                        }
+        
+                        if (weeklyStreaks) {
+                            weeklyStreaks.style.backgroundColor = '#f1d6b4';
+                            weeklyStreaks.style.color = '#5b4636';
+                            document.querySelector("#weekly-card span").style.color='#5b4636';
+        
+                        }
+        
+                        if (ayahOfTheDay) {
+                            ayahOfTheDay.style.backgroundColor = '#f1d6b4';
+                            ayahOfTheDay.style.color = '#5b4636';
+                            document.querySelector("#ayah-card span").style.color='#5b4636';
+        
+                        }
+        
+                        document.querySelector("#contact-us-list1").style.color='#5b4636';
+                        document.querySelector("#contact-us-list2").style.color='#5b4636';
+                        document.querySelector("#contact-us-list3").style.color='#5b4636';
+        
+                        
+        
+                        streakCards.forEach(card => {
+                            card.style.backgroundColor = '#f4ecd8';
+                            card.style.color = '#5b4636';
+                        });
+                        break;
+        
+                    case 'auto':
+                        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                        if (prefersDark) {
+                            applyDarkTheme();
+                        } else {
+                            applyTheme('light');
+                        }
+                        break;
+        
+                    default:
+                        applyDarkTheme();
+                }
+            }
+        
+            function applyDarkTheme() {
+                body.style.backgroundColor = '#030916';
+                body.style.color = '#ffffff';
+        
+                header.style.backgroundColor = '#150734';
+                header.style.color = '#ffffff';
+        
+                footer.style.backgroundColor = '#150734';
+                footer.style.color = '#ffffff';
+        
+                footerContent.style.backgroundColor = '#0e0523';
+                footerContent.style.color = '#ffffff';
+        
+                footerBottom.style.backgroundColor = '#0e0523';
+                footerBottom.style.color = '#ffffff';
+        
+                if (continueReading) {
+                    continueReading.style.backgroundColor = '#150734';
+                    continueReading.style.color = '#ffffff';
+                }
+        
+                if (streakScore) {
+                    streakScore.style.backgroundColor = '#150734';
+                    streakScore.style.color = '#ffffff';
+                }
+        
+                if (weeklyStreaks) {
+                    weeklyStreaks.style.backgroundColor = '#150734';
+                    weeklyStreaks.style.color = '#ffffff';
+                }
+        
+                if (ayahOfTheDay) {
+                    ayahOfTheDay.style.backgroundColor = '#150734';
+                    ayahOfTheDay.style.color = '#ffffff';
+                }
+        
+                streakCards.forEach(card => {
+                    card.style.backgroundColor = '#0e0523';
+                    card.style.color = '#ffffff';
+                });
+            }
+        });
+        </script>  
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const theme = localStorage.getItem("selectedTheme") || "auto";
+            
+                const icons = {
+                    settings: document.querySelector('a[href="/settings"] img'),
+                    account: document.querySelector('#account-btn'),
+                    analytics: document.querySelector('a[href="/progress-and-analytics"] img'),
+                    menu: document.querySelector('a[href="#"] img')
+                };
+            
+                function updateNavIcons(theme) {
+                    let suffix = "";
+            
+                    switch (theme) {
+                        case "light":
+                            suffix = "_light.svg";
+                            break;
+                        case "sepia":
+                            suffix = "_sepia.svg";
+                            break;
+                        case "dark":
+                            suffix = ".png"; // default dark mode icons
+                            break;
+                        case "auto":
+                            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                            return updateNavIcons(prefersDark ? "dark" : "light");
+                    }
+            
+                    if (icons.settings) icons.settings.src = `../static/settings${suffix}`;
+                    if (icons.account) icons.account.src = `../static/account${suffix}`;
+                    if (icons.analytics) icons.analytics.src = `../static/analytics${suffix}`;
+                    if (icons.menu) icons.menu.src = `../static/menu${suffix}`;
+                }
+            
+                updateNavIcons(theme);
+            });
+            </script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const accountDropdownLinks = document.querySelectorAll("#account-dropdown a");
+            
+                    function updateDropdownTheme(theme) {
+                        if (theme === "light") {
+                            accountDropdownLinks.forEach(link => {
+                                link.style.backgroundColor = "#d8e3ed";
+                                link.style.color = "black";
+                            });
+                        } else if (theme === "sepia") {
+                            accountDropdownLinks.forEach(link => {
+                                link.style.backgroundColor = "#f1d6b4";
+                                link.style.color = "#5b4636";
+                            });
+                        } else {
+                            // Dark theme (default)
+                            accountDropdownLinks.forEach(link => {
+                                link.style.backgroundColor = "#150734";
+                                link.style.color = "white";
+                            });
+                        }
+                    }
+            
+                    // Get stored or default theme
+                    let selectedTheme = localStorage.getItem("selectedTheme") || "dark";
+            
+                    if (selectedTheme === "auto") {
+                        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                        selectedTheme = prefersDark ? "dark" : "light";
+                    }
+            
+                    updateDropdownTheme(selectedTheme);
+                });
+            </script>
+            
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const logoImg = document.querySelector(".logo img");
+            
+                    function updateLogo(theme) {
+                        if (theme === "light") {
+                            logoImg.src = "../static/alkitab_logo_light.png";
+                            logoImg.style.width = "160px";
+                            logoImg.style.height = "auto";
+                        } else if (theme === "sepia") {
+                            logoImg.src = "../static/alkitab_logo_sepia.png";
+                            logoImg.style.width = "160px";
+                            logoImg.style.height = "auto";
+                        } else {
+                            // Default to dark theme logo
+                            logoImg.src = "../static/logo.png";
+                            logoImg.style.width = "160px";
+                            logoImg.style.height = "auto";
+                        }
+                    }
+            
+                    let selectedTheme = localStorage.getItem("selectedTheme") || "dark";
+            
+                    if (selectedTheme === "auto") {
+                        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                        selectedTheme = prefersDark ? "dark" : "light";
+                    }
+            
+                    updateLogo(selectedTheme);
+                });
+            </script>
+            
+
+    </body>
+</html>

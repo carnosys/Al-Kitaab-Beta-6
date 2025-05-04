@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Al Kitab</title>
+    <link rel="stylesheet" href="../static/profileSetting.css">
+</head>
+
+<body>
+    <div class="settings-container">
+        <h1>Account Settings</h1>
+
+        <section class="setting-section">
+            <h2>Profile Settings</h2>
+            <label for="username">Change Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter new username">
+
+            <label for="details">Update Details:</label>
+            <textarea id="details" name="details" placeholder="Enter details"></textarea>
+        </section>
+
+        <section class="setting-section">
+            <h2>Goal Setting</h2>
+            <label for="goal">Set Your Goal:</label>
+            <input type="text" id="goal" name="goal" placeholder="Enter your goal">
+        </section>
+
+    
+
+        <section class="setting-section">
+            <h2>Script Options</h2>
+            <label for="script">Choose Script:</label>
+            <select id="script">
+                <option value="indopak">IndoPak Script</option>
+                <option value="uthmani">Uthmani Script</option>
+            </select>
+        </section>
+
+        <button type="submit">Save Changes</button>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const savedTheme = localStorage.getItem("selectedTheme");
+            const body = document.body;
+            const saveButton = document.querySelector("button");
+            const container = document.querySelector(".settings-container");
+            const sections = document.querySelectorAll(".setting-section");
+            const allTextElements = document.querySelectorAll("body, h1, h2, label");
+            const allInputs = document.querySelectorAll("input, select, textarea");
+        
+            function applyTheme(theme) {
+                switch (theme) {
+                    case "light":
+                        body.style.backgroundColor = "#ffffff";
+                        container.style.backgroundColor = "#d8e3ed";
+                        sections.forEach(section => {
+                            section.style.backgroundColor = "#ebf0f6";
+                        });
+                        saveButton.style.backgroundColor = "#f9f9f9";
+                        saveButton.style.color = "#000000";
+        
+                        allTextElements.forEach(el => {
+                            el.style.color = "#000000";
+                        });
+                        allInputs.forEach(el => {
+                            el.style.border = "1px solid #000000";
+                            el.style.color = "#000000";
+                            el.style.backgroundColor = "#ffffff";
+                        });
+                        break;
+        
+                    case "sepia":
+                        body.style.backgroundColor = "#f4ecd8";
+                        container.style.backgroundColor = "#f1d6b4";
+                        sections.forEach(section => {
+                            section.style.backgroundColor = "#f4ecd8";
+                        });
+                        saveButton.style.backgroundColor = "#f4ecd8";
+                        saveButton.style.color = "#5b4636";
+        
+                        allTextElements.forEach(el => {
+                            el.style.color = "#5b4636";
+                        });
+                        allInputs.forEach(el => {
+                            el.style.border = "1px solid #5b4636";
+                            el.style.color = "#5b4636";
+                            el.style.backgroundColor = "#fef9f1";
+                        });
+                        break;
+        
+                    case "dark":
+                        // Restore default dark theme styles from CSS
+                        body.style.backgroundColor = "#030916";
+                        container.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                        sections.forEach(section => {
+                            section.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                        });
+                        saveButton.style.backgroundColor = "#150734";
+                        saveButton.style.color = "white";
+        
+                        allTextElements.forEach(el => {
+                            el.style.color = "white";
+                        });
+                        allInputs.forEach(el => {
+                            el.style.border = "1px solid black";
+                            el.style.color = "black";
+                            el.style.backgroundColor = "white";
+                        });
+                        break;
+        
+                    case "auto":
+                        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                        applyTheme(prefersDark ? "dark" : "light");
+                        break;
+        
+                    default:
+                        applyTheme("dark");
+                }
+            }
+        
+            applyTheme(savedTheme || "auto");
+        });
+        </script>
+        
+</body>
+
+</html>
